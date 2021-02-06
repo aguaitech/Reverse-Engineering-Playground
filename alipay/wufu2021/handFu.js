@@ -290,7 +290,7 @@
       };
     },
     "3Koh": function (module, exports, __webpack_require__) {
-      (function (e) {
+      (function (globalScope) {
         (function (e, n) {
           n(exports);
         })(0, function (t) {
@@ -541,7 +541,8 @@
             ? globalThis
             : "undefined" !== typeof window
             ? window
-            : "undefined" !== typeof e || ("undefined" !== typeof self && self);
+            : "undefined" !== typeof globalScope ||
+              ("undefined" !== typeof self && self);
           function A(e) {
             return e &&
               e.__esModule &&
@@ -5342,11 +5343,14 @@
           );
         })(React_.a.Component);
       D.defaultProps = { classNames: "" };
-      var fuCardCodes,
-        j,
-        F,
-        U,
-        L,
+      var fuCardCodes = {
+          JING_YE: "1001",
+          AI_GUO: "1002",
+          FU_QIANG: "1003",
+          HE_XIE: "1004",
+          YOU_SHAN: "1005",
+        },
+        fuCardTexts,
         G = D,
         Q = __webpack_require__("rral"),
         className$1 = __webpack_require__.n(Q),
@@ -5402,13 +5406,6 @@
         fuDetectErrorCodes = { Fu: -1, TinyFu: 1, SingleFu: 2, NotFu: 3 },
         q = __webpack_require__("7bjG"),
         Platform = __webpack_require__.n(q);
-      (function (e) {
-        (e["JING_YE"] = "1001"),
-          (e["AI_GUO"] = "1002"),
-          (e["FU_QIANG"] = "1003"),
-          (e["HE_XIE"] = "1004"),
-          (e["YOU_SHAN"] = "1005");
-      })(fuCardCodes || (fuCardCodes = {}));
       var pageMode = {
           Empty: -1,
           Guide: 0,
@@ -5426,8 +5423,8 @@
           realPre: "https://gw-pre.alipayobjects.com/a",
         },
         baseUrl = baseUrlSet.prod,
-        ne = "SHOUXIEFU",
-        ie = {
+        sourceType = "SHOUXIEFU",
+        bizTypes = {
           Fu: "sxffuzi_68687779",
           FuPNG: "handwriting_word_t21",
           Complete: "sxfcomplete_68687779",
@@ -5436,172 +5433,176 @@
           Tablet: "sxfzj_68687779",
           Zhongbao: "sxfzb_68687779",
         },
-        re =
-          ((j = {}),
-          (j[pageMode.Empty] = ""),
-          (j[pageMode.Guide] = ""),
-          (j[pageMode.Writing] = "我家福字我来写"),
-          (j[pageMode.Decorate] = "我家福字我来写"),
-          (j[pageMode.Save] = ""),
-          j),
-        ae =
-          ((F = {}),
-          (F[pageMode.Empty] = ""),
-          (F[pageMode.Guide] = "写福字得手写福卡"),
-          (F[pageMode.Writing] = "写福字得手写福卡"),
-          (F[pageMode.Decorate] = "写福字得手写福卡"),
-          (F[pageMode.ScreenReader] = "写福字得手写福卡"),
-          (F[pageMode.Save] = ""),
-          F),
-        oe = { None: 0, Static: 1, Full: 2 },
-        se = 312,
-        le = 800,
+        prePeriodTitles = {
+          [pageMode.Empty]: "",
+          [pageMode.Guide]: "",
+          [pageMode.Writing]: "我家福字我来写",
+          [pageMode.Decorate]: "我家福字我来写",
+          [pageMode.Save]: "",
+        },
+        periodTitles = {
+          [pageMode.Empty]: "",
+          [pageMode.Guide]: "写福字得手写福卡",
+          [pageMode.Writing]: "写福字得手写福卡",
+          [pageMode.Decorate]: "写福字得手写福卡",
+          [pageMode.ScreenReader]: "写福字得手写福卡",
+          [pageMode.Save]: "",
+        },
+        degradeLevelCodes = { None: 0, Static: 1, Full: 2 },
+        baseScreenWidth = 312,
+        basePrintWidth = 800,
         memberUrl =
           "alipays://platformapi/startapp?appId=20000160&appClearTop=false&startMultApp=YES&url=/www/exchangeList.html",
-        ue = 500,
-        de = "h5data-cache-fd-sxf-h5data/index-h5data",
-        me = "h5data-cache-fd-sxf-h5data/index-h5data/benefit-id-new",
-        pe = "data:image/png;base64,",
-        fe = /^(?:[\u3400-\u4DBF一-\u9FFC\uFA0E\uFA0F\uFA11\uFA13\uFA14\uFA1F\uFA21\uFA23\uFA24\uFA27-\uFA29]|[\uD840-\uD868\uD86A-\uD86C\uD86F-\uD872\uD874-\uD879\uD880-\uD883][\uDC00-\uDFFF]|\uD869[\uDC00-\uDEDD\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEA1\uDEB0-\uDFFF]|\uD87A[\uDC00-\uDFE0]|\uD884[\uDC00-\uDF4A])$/,
-        he = { benefitId: "${_benefitId_}", mediaId: "${_mediaId_}" },
-        ge = "点击签名",
-        be =
-          ((U = {}),
-          (U[fuCardCodes.JING_YE] =
-            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*0nq_QIkALsQAAAAAAAAAAAAAARQnAQ"),
-          (U[fuCardCodes.AI_GUO] =
-            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*iGssQ7H0Sw8AAAAAAAAAAAAAARQnAQ"),
-          (U[fuCardCodes.HE_XIE] =
-            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*YKBJT7fdpxMAAAAAAAAAAAAAARQnAQ"),
-          (U[fuCardCodes.YOU_SHAN] =
-            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*N1OlSbbPh58AAAAAAAAAAAAAARQnAQ"),
-          (U[fuCardCodes.FU_QIANG] =
-            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*o6w8SJxXhn4AAAAAAAAAAAAAARQnAQ"),
-          U),
-        ve =
-          ((L = {}),
-          (L[fuCardCodes.JING_YE] = "敬业"),
-          (L[fuCardCodes.AI_GUO] = "爱国"),
-          (L[fuCardCodes.YOU_SHAN] = "友善"),
-          (L[fuCardCodes.HE_XIE] = "和谐"),
-          (L[fuCardCodes.FU_QIANG] = "富强"),
-          __webpack_require__("hwum")),
+        basePhotoWidth = 500,
+        h5dataStorageKey = "h5data-cache-fd-sxf-h5data/index-h5data",
+        benefitIdStorageKey = "h5data-cache-fd-sxf-h5data/index-h5data/benefit-id-new",
+        base64ImagePrefix = "data:image/png;base64,",
+        isChineseRegex = /^(?:[\u3400-\u4DBF一-\u9FFC\uFA0E\uFA0F\uFA11\uFA13\uFA14\uFA1F\uFA21\uFA23\uFA24\uFA27-\uFA29]|[\uD840-\uD868\uD86A-\uD86C\uD86F-\uD872\uD874-\uD879\uD880-\uD883][\uDC00-\uDFFF]|\uD869[\uDC00-\uDEDD\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEA1\uDEB0-\uDFFF]|\uD87A[\uDC00-\uDFE0]|\uD884[\uDC00-\uDF4A])$/,
+        printTemplates = { benefitId: "${_benefitId_}", mediaId: "${_mediaId_}" },
+        clickToSignText = "点击签名",
+        fuCardImages = {
+          [fuCardCodes.JING_YE]:
+            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*0nq_QIkALsQAAAAAAAAAAAAAARQnAQ",
+          [fuCardCodes.AI_GUO]:
+            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*iGssQ7H0Sw8AAAAAAAAAAAAAARQnAQ",
+          [fuCardCodes.HE_XIE]:
+            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*YKBJT7fdpxMAAAAAAAAAAAAAARQnAQ",
+          [fuCardCodes.YOU_SHAN]:
+            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*N1OlSbbPh58AAAAAAAAAAAAAARQnAQ",
+          [fuCardCodes.FU_QIANG]:
+            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*o6w8SJxXhn4AAAAAAAAAAAAAARQnAQ",
+        },
+        fuCardTexts = {
+          [fuCardCodes.JING_YE]: "敬业",
+          [fuCardCodes.AI_GUO]: "爱国",
+          [fuCardCodes.YOU_SHAN]: "友善",
+          [fuCardCodes.HE_XIE]: "和谐",
+          [fuCardCodes.FU_QIANG]: "富强",
+        },
+        remoteLogUtils = __webpack_require__("hwum"),
         Ae = __webpack_require__("GdIV"),
         _e = __webpack_require__.n(Ae),
         ye = __webpack_require__("ikyr"),
         we = __webpack_require__.n(ye),
         ke = __webpack_require__("Ec7T"),
         xe = __webpack_require__.n(ke);
-      function Ee(e) {
+      function _typeof(obj) {
         "@babel/helpers - typeof";
-        return (
-          (Ee =
-            "function" === typeof Symbol && "symbol" === typeof Symbol.iterator
-              ? function (e) {
-                  return typeof e;
-                }
-              : function (e) {
-                  return e &&
-                    "function" === typeof Symbol &&
-                    e.constructor === Symbol &&
-                    e !== Symbol.prototype
-                    ? "symbol"
-                    : typeof e;
-                }),
-          Ee(e)
-        );
+        if (
+          typeof Symbol === "function" &&
+          typeof Symbol.iterator === "symbol"
+        ) {
+          _typeof = function (obj) {
+            return typeof obj;
+          };
+        } else {
+          _typeof = function (obj) {
+            return obj &&
+              typeof Symbol === "function" &&
+              obj.constructor === Symbol &&
+              obj !== Symbol.prototype
+              ? "symbol"
+              : typeof obj;
+          };
+        }
+        return _typeof(obj);
       }
-      function Se(e, t) {
-        if (!(e instanceof t))
+      function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor))
           throw new TypeError("Cannot call a class as a function");
       }
-      function Te(e, t) {
-        for (var n = 0; n < t.length; n++) {
-          var i = t[n];
-          (i.enumerable = i.enumerable || false),
-            (i.configurable = true),
-            "value" in i && (i.writable = true),
-            Object.defineProperty(e, i.key, i);
+      function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          Object.defineProperty(target, descriptor.key, descriptor);
         }
       }
-      function Ce(e, t, n) {
-        return t && Te(e.prototype, t), n && Te(e, n), e;
+      function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        return Constructor;
       }
-      function Ie(e, t, n) {
-        return (
-          t in e
-            ? Object.defineProperty(e, t, {
-                value: n,
-                enumerable: true,
-                configurable: true,
-                writable: true,
-              })
-            : (e[t] = n),
-          e
-        );
+      function _defineProperty(obj, key, value) {
+        if (key in obj) {
+          Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true,
+          });
+        } else {
+          obj[key] = value;
+        }
+        return obj;
       }
-      function Pe(e, t) {
-        var n = Object.keys(e);
+      function _ownKeys(object, enumerableOnly) {
+        var keys = Object.keys(object);
         if (Object.getOwnPropertySymbols) {
-          var i = Object.getOwnPropertySymbols(e);
-          t &&
-            (i = i.filter(function (t) {
-              return Object.getOwnPropertyDescriptor(e, t).enumerable;
-            })),
-            n.push.apply(n, i);
+          var symbols = Object.getOwnPropertySymbols(object);
+          if (enumerableOnly)
+            symbols = symbols.filter(function (sym) {
+              return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+            });
+          keys.push.apply(keys, symbols);
         }
-        return n;
+        return keys;
       }
-      function Ne(e) {
-        for (var t = 1; t < arguments.length; t++) {
-          var n = null != arguments[t] ? arguments[t] : {};
-          t % 2
-            ? Pe(Object(n), true).forEach(function (t) {
-                Ie(e, t, n[t]);
-              })
-            : Object.getOwnPropertyDescriptors
-            ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(n))
-            : Pe(Object(n)).forEach(function (t) {
-                Object.defineProperty(
-                  e,
-                  t,
-                  Object.getOwnPropertyDescriptor(n, t)
-                );
-              });
+      function _objectSpread(target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i] != null ? arguments[i] : {};
+          if (i % 2) {
+            _ownKeys(Object(source), true).forEach(function (key) {
+              _defineProperty(target, key, source[key]);
+            });
+          } else if (Object.getOwnPropertyDescriptors) {
+            Object.defineProperties(
+              target,
+              Object.getOwnPropertyDescriptors(source)
+            );
+          } else {
+            _ownKeys(Object(source)).forEach(function (key) {
+              Object.defineProperty(
+                target,
+                key,
+                Object.getOwnPropertyDescriptor(source, key)
+              );
+            });
+          }
         }
-        return e;
+        return target;
       }
-      function Oe(e, t) {
-        if ("function" !== typeof t && null !== t)
+      function _inherits(subClass, superClass) {
+        if (typeof superClass !== "function" && superClass !== null) {
           throw new TypeError(
             "Super expression must either be null or a function"
           );
-        (e.prototype = Object.create(t && t.prototype, {
-          constructor: { value: e, writable: true, configurable: true },
-        })),
-          t && Be(e, t);
+        }
+        subClass.prototype = Object.create(superClass && superClass.prototype, {
+          constructor: { value: subClass, writable: true, configurable: true },
+        });
+        if (superClass) _setPrototypeOf(subClass, superClass);
       }
-      function Re(e) {
-        return (
-          (Re = Object.setPrototypeOf
-            ? Object.getPrototypeOf
-            : function (e) {
-                return e.__proto__ || Object.getPrototypeOf(e);
-              }),
-          Re(e)
-        );
+      function _getPrototypeOf(o) {
+        _getPrototypeOf = Object.setPrototypeOf
+          ? Object.getPrototypeOf
+          : function _getPrototypeOf(o) {
+              return o.__proto__ || Object.getPrototypeOf(o);
+            };
+        return _getPrototypeOf(o);
       }
-      function Be(e, t) {
-        return (
-          (Be =
-            Object.setPrototypeOf ||
-            function (e, t) {
-              return (e.__proto__ = t), e;
-            }),
-          Be(e, t)
-        );
+      function _setPrototypeOf(o, p) {
+        _setPrototypeOf =
+          Object.setPrototypeOf ||
+          function _setPrototypeOf(o, p) {
+            o.__proto__ = p;
+            return o;
+          };
+        return _setPrototypeOf(o, p);
       }
-      function De() {
+      function _isNativeReflectConstruct() {
         if ("undefined" === typeof Reflect || !Reflect.construct) return false;
         if (Reflect.construct.sham) return false;
         if ("function" === typeof Proxy) return true;
@@ -5616,61 +5617,64 @@
           return false;
         }
       }
-      function ze(e) {
-        if (undefined === e)
+      function _assertThisInitialized(self) {
+        if (undefined === self)
           throw new ReferenceError(
             "this hasn't been initialised - super() hasn't been called"
           );
-        return e;
+        return self;
       }
-      function Me(e, t) {
-        return !t || ("object" !== typeof t && "function" !== typeof t)
-          ? ze(e)
-          : t;
+      function _possibleConstructorReturn(self, call) {
+        if (call && (typeof call === "object" || typeof call === "function")) {
+          return call;
+        }
+        return _assertThisInitialized(self);
       }
-      function je(e) {
-        var t = De();
+      function _createSuper(Derived) {
+        var hasNativeReflectConstruct = _isNativeReflectConstruct();
         return function () {
-          var n,
-            i = Re(e);
-          if (t) {
-            var r = Re(this).constructor;
-            n = Reflect.construct(i, arguments, r);
-          } else n = i.apply(this, arguments);
-          return Me(this, n);
+          var result,
+            Super = _getPrototypeOf(Derived);
+          if (hasNativeReflectConstruct) {
+            var NewTarget = _getPrototypeOf(this).constructor;
+            result = Reflect.construct(Super, arguments, NewTarget);
+          } else result = Super.apply(this, arguments);
+          return _possibleConstructorReturn(this, result);
         };
       }
-      function Fe(e) {
-        return Ue(e) || Le(e) || Ge(e) || He();
+      function _slicedToArray(arr) {
+        return (
+          _arrayWithHoles(arr) ||
+          _iterableToArray(arr) ||
+          _unsupportedIterableToArray(arr) ||
+          _nonIterableRest()
+        );
       }
-      function Ue(e) {
-        if (Array.isArray(e)) return e;
+      function _arrayWithHoles(arr) {
+        if (Array.isArray(arr)) return arr;
       }
-      function Le(e) {
-        if ("undefined" !== typeof Symbol && Symbol.iterator in Object(e))
-          return Array.from(e);
+      function _iterableToArray(arr) {
+        if ("undefined" !== typeof Symbol && Symbol.iterator in Object(arr))
+          return Array.from(arr);
       }
-      function Ge(e, t) {
-        if (e) {
-          if ("string" === typeof e) return Qe(e, t);
-          var n = Object.prototype.toString.call(e).slice(8, -1);
-          return (
-            "Object" === n && e.constructor && (n = e.constructor.name),
-            "Map" === n || "Set" === n
-              ? Array.from(e)
-              : "Arguments" === n ||
-                /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)
-              ? Qe(e, t)
-              : undefined
-          );
-        }
+      function _unsupportedIterableToArray(o, minLen) {
+        if (!o) return;
+        if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+        var n = Object.prototype.toString.call(o).slice(8, -1);
+        if (n === "Object" && o.constructor) n = o.constructor.name;
+        if (n === "Map" || n === "Set") return Array.from(o);
+        if (
+          n === "Arguments" ||
+          /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)
+        )
+          return _arrayLikeToArray(o, minLen);
       }
-      function Qe(e, t) {
-        (null == t || t > e.length) && (t = e.length);
-        for (var n = 0, i = new Array(t); n < t; n++) i[n] = e[n];
-        return i;
+      function _arrayLikeToArray(arr, len) {
+        if (len == null || len > arr.length) len = arr.length;
+        for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+        return arr2;
       }
-      function He() {
+      function _nonIterableRest() {
         throw new TypeError(
           "Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."
         );
@@ -5702,29 +5706,29 @@
         }
         return r.join(n);
       }
-      function Ye() {
-        var e = new Date(),
-          t = function (e) {
-            return e < 10 ? "0".concat(e) : "".concat(e);
+      function getFormattedDate() {
+        var date = new Date(),
+          pad = function (num) {
+            return num < 10 ? "0".concat(num) : "".concat(num);
           };
         return ""
-          .concat(e.getFullYear(), "-")
-          .concat(t(e.getMonth() + 1), "-")
-          .concat(t(e.getDate()), " ")
-          .concat(t(e.getHours()), ":")
-          .concat(t(e.getMinutes()), ":")
-          .concat(t(e.getSeconds()), ":")
-          .concat(e.getMilliseconds());
+          .concat(date.getFullYear(), "-")
+          .concat(pad(date.getMonth() + 1), "-")
+          .concat(pad(date.getDate()), " ")
+          .concat(pad(date.getHours()), ":")
+          .concat(pad(date.getMinutes()), ":")
+          .concat(pad(date.getSeconds()), ":")
+          .concat(date.getMilliseconds());
       }
       function Je(e) {
-        if (!e || "object" !== Ee(e)) return [];
+        if (!e || "object" !== _typeof(e)) return [];
         var t = e.eventId,
           n = e.userId,
           i = e.ua,
           r = e.param4,
           a = [
             "D-AE",
-            Ye(),
+            getFormattedDate(),
             "",
             "",
             "2",
@@ -5764,7 +5768,7 @@
       }
       function Xe(e, t) {
         var n = e || {};
-        if (!t || "object" !== Ee(t)) return n;
+        if (!t || "object" !== _typeof(t)) return n;
         for (var i in t)
           t.hasOwnProperty(i) && undefined !== t[i] && (n[i] = t[i]);
         return n;
@@ -5996,8 +6000,11 @@
         pt = (function () {
           function e() {
             var this_ = this;
-            Se(this, e),
-              (this.lastAction = "0\x02\x02".concat(Ye(), "\x02")),
+            _classCallCheck(this, e),
+              (this.lastAction = "0\x02\x02".concat(
+                getFormattedDate(),
+                "\x02"
+              )),
               (this.setLastActionTimer = false),
               qe("scroll", document, function (e) {
                 this_.setLastActionTimer ||
@@ -6012,7 +6019,7 @@
               });
           }
           return (
-            Ce(e, [
+            _createClass(e, [
               {
                 key: "setLastAction",
                 value: function (e) {
@@ -6022,7 +6029,7 @@
                       i = n ? 1 : 2;
                     t.push(i);
                     var r = n ? "".concat(nt(e.target, 5)) : "";
-                    t.push(r), t.push(Ye());
+                    t.push(r), t.push(getFormattedDate());
                     var a = n
                       ? "".concat(e.x, "x").concat(e.y)
                       : ""
@@ -6092,14 +6099,14 @@
           .join("");
         console.warn(r);
       }
-      var bt = ve["b"].ErrorCodeEnums,
+      var bt = remoteLogUtils["b"].ErrorCodeEnums,
         vt = document,
         At = vt.documentElement,
         _t = new Date().getTime(),
         yt = (function () {
           function e(t) {
             var this_ = this;
-            Se(this, e),
+            _classCallCheck(this, e),
               (this.server = ft),
               (this.userConfig = {}),
               (this.defaults = {}),
@@ -6121,7 +6128,7 @@
               (this._warn = function () {
                 var e = window;
                 if (
-                  "object" === Ee(e) &&
+                  "object" === _typeof(e) &&
                   e.console &&
                   "function" === typeof e.console.warn &&
                   this_.debug
@@ -6139,7 +6146,7 @@
                   ]);
                 }
               });
-            var i = Object(ve["c"])().process(t);
+            var i = Object(remoteLogUtils["c"])().process(t);
             (this.userConfig = i),
               (this.eventId = "102022"),
               (this.bmAppid = i.bmAppid),
@@ -6154,7 +6161,7 @@
               (this.enabledPlugins = i.plugins);
           }
           return (
-            Ce(e, [
+            _createClass(e, [
               {
                 key: "handleErrorEvent",
                 value: function (e, t) {
@@ -6266,8 +6273,8 @@
               {
                 key: "parseParam4",
                 value: function (e) {
-                  if (!e || "object" !== Ee(e)) return null;
-                  var t = Ne(Ne({}, this.defaults), e);
+                  if (!e || "object" !== _typeof(e)) return null;
+                  var t = _objectSpread(_objectSpread({}, this.defaults), e);
                   (e.bmAppid || this.bmAppid) &&
                     (t.bm_appid = e.bmAppid || this.bmAppid),
                     this.userConfig.sprintId &&
@@ -6299,7 +6306,7 @@
                     (t.fullURL = t.fullURL || location.href),
                     this.cOfflineVer && (t.c_offline_ver = this.cOfflineVer),
                     this.cAppId && (t.c_app_id = this.cAppId),
-                    "object" === Ee(t))
+                    "object" === _typeof(t))
                   ) {
                     var i = t;
                     for (var r in i)
@@ -6395,10 +6402,10 @@
         Et = 9e5,
         St = (function () {
           function e() {
-            Se(this, e);
+            _classCallCheck(this, e);
           }
           return (
-            Ce(e, [
+            _createClass(e, [
               {
                 key: "getStorageInfoMap",
                 value: function () {
@@ -6434,10 +6441,10 @@
         })(),
         Tt = (function () {
           function e() {
-            Se(this, e), (this.configStorage = new St());
+            _classCallCheck(this, e), (this.configStorage = new St());
           }
           return (
-            Ce(e, [
+            _createClass(e, [
               {
                 key: "apply",
                 value: function (e) {
@@ -6457,7 +6464,7 @@
                 key: "enhance",
                 value: function (e, t) {
                   var this_ = this;
-                  Object(ve["e"])(e, {
+                  Object(remoteLogUtils["e"])(e, {
                     initMonitorConfigs: function (i) {
                       e.setMonitorConfigs(i),
                         this_.configStorage.saveMonitorConfig(t, i);
@@ -6508,7 +6515,7 @@
           );
         })(),
         Ct = function (e) {
-          if ("object" !== Ee(e)) return [];
+          if ("object" !== _typeof(e)) return [];
           var t = e.getEntriesByType("paint"),
             n = {};
           if (t.length) {
@@ -6528,7 +6535,7 @@
           return n;
         };
       function It(e, t) {
-        if ("object" !== Ee(e) || "function" !== typeof e.getEntriesByType)
+        if ("object" !== _typeof(e) || "function" !== typeof e.getEntriesByType)
           return null;
         var n = e.getEntriesByType("navigation");
         if (!n || 0 === n.length) return null;
@@ -6538,8 +6545,16 @@
         return ht.reduce(function (e, t) {
           var n = i[t] || r[t] || a[t];
           return null == n || ("number" === typeof n && isNaN(n))
-            ? Ne(Ne({}, e), {}, Ie({}, "".concat(t), 0))
-            : Ne(Ne({}, e), {}, Ie({}, "".concat(t), n));
+            ? _objectSpread(
+                _objectSpread({}, e),
+                {},
+                _defineProperty({}, "".concat(t), 0)
+              )
+            : _objectSpread(
+                _objectSpread({}, e),
+                {},
+                _defineProperty({}, "".concat(t), n)
+              );
         }, {});
       }
       function Pt(e, t) {
@@ -6585,7 +6600,7 @@
         Rt = 500,
         Bt = "32767";
       function Dt(e, t) {
-        if ("object" === Ee(t) && !e.metricsSent)
+        if ("object" === _typeof(t) && !e.metricsSent)
           try {
             var n,
               i,
@@ -6602,20 +6617,28 @@
                 d3: document.hidden ? 0 : 1,
               },
               s = { c1: document.title };
-            e.log(Ne(Ne(Ne({ code: Bt, msg: location.href }, Pt(a, r)), o), s)),
+            e.log(
+              _objectSpread(
+                _objectSpread(
+                  _objectSpread({ code: Bt, msg: location.href }, Pt(a, r)),
+                  o
+                ),
+                s
+              )
+            ),
               (e.metricsSent = true);
           } catch (e) {}
       }
       var zt = (function () {
           function e() {
-            Se(this, e);
+            _classCallCheck(this, e);
           }
           return (
-            Ce(e, [
+            _createClass(e, [
               {
                 key: "apply",
                 value: function (e) {
-                  if (((this.monitor = e), "object" === Ee(we.a)))
+                  if (((this.monitor = e), "object" === _typeof(we.a)))
                     try {
                       xe()(function (e) {
                         Ot = e;
@@ -6637,7 +6660,7 @@
         Mt = (function () {
           function e() {
             var this_ = this;
-            Se(this, e),
+            _classCallCheck(this, e),
               (this.injectedLog = function (e) {
                 var n;
                 return null === (n = this_.monitor) || undefined === n
@@ -6646,7 +6669,7 @@
               });
           }
           return (
-            Ce(e, [
+            _createClass(e, [
               {
                 key: "apply",
                 value: function (e) {
@@ -6672,15 +6695,19 @@
                                 '"Tracert.log" 已不建议使用。请迁移到 @alipay/yuyan-monitor-web。'
                               ),
                               this_.injectedLog(
-                                Ne(Ne({}, e), {}, { bmAppid: i || r })
+                                _objectSpread(
+                                  _objectSpread({}, e),
+                                  {},
+                                  { bmAppid: i || r }
+                                )
                               )
                             );
                           },
                         };
                         n.call("after", "start", function () {
-                          n.call("set", Ne({}, i));
+                          n.call("set", _objectSpread({}, i));
                         }),
-                          n.call("set", Ne({}, i));
+                          n.call("set", _objectSpread({}, i));
                       }
                     });
                 },
@@ -6692,10 +6719,10 @@
         jt = "https://tracert.alipay.com/cross.html",
         Ft = (function () {
           function e() {
-            Se(this, e), (this._iframe = null);
+            _classCallCheck(this, e), (this._iframe = null);
           }
           return (
-            Ce(e, [
+            _createClass(e, [
               {
                 key: "canLoadIframe",
                 value: function () {
@@ -6751,7 +6778,7 @@
       }
       var Qt = (function () {
           function e() {
-            Se(this, e),
+            _classCallCheck(this, e),
               (this.iframe = null),
               (this.iframeLoaded = false),
               (this.pending = false),
@@ -6759,7 +6786,7 @@
               (this.cachedQuery = []);
           }
           return (
-            Ce(e, [
+            _createClass(e, [
               {
                 key: "apply",
                 value: function (e) {
@@ -6848,7 +6875,7 @@
                 value: function () {
                   if (this.cachedQuery.length)
                     for (var e = 0; e < this.cachedQuery.length; e++) {
-                      var t = Fe(this.cachedQuery[e]),
+                      var t = _slicedToArray(this.cachedQuery[e]),
                         n = t[0],
                         i = t.slice(1);
                       this[n].apply(this, i);
@@ -6885,11 +6912,11 @@
             return t(e, false);
           });
       }
-      var Zt = ve["b"].ErrorCodeEnums,
+      var Zt = remoteLogUtils["b"].ErrorCodeEnums,
         Yt = window,
         Jt = (function (e) {
-          Oe(n, e);
-          var t = je(n);
+          _inherits(n, e);
+          var t = _createSuper(n);
           function n() {
             var e,
               i =
@@ -6897,7 +6924,7 @@
                   ? arguments[0]
                   : { appType: "H5" };
             return (
-              Se(this, n),
+              _classCallCheck(this, n),
               (e = t.call(this, i)),
               (e.jsBridgeReady = false),
               (e.itemCache = []),
@@ -6905,11 +6932,12 @@
               (e.UserConfig = {}),
               (e.destroyed = false),
               -1 !== e.enabledPlugins.indexOf("tracert") &&
-                new Mt().apply(ze(e)),
-              new Tt().apply(ze(e)),
+                new Mt().apply(_assertThisInitialized(e)),
+              new Tt().apply(_assertThisInitialized(e)),
               -1 !== e.enabledPlugins.indexOf("performance") &&
-                new zt().apply(ze(e)),
-              -1 !== e.enabledPlugins.indexOf("buc") && new Qt().apply(ze(e)),
+                new zt().apply(_assertThisInitialized(e)),
+              -1 !== e.enabledPlugins.indexOf("buc") &&
+                new Qt().apply(_assertThisInitialized(e)),
               (e.isAlipay = Ve(Yt.navigator)),
               e.initJsBridge(),
               e.fetchConfig(),
@@ -6919,7 +6947,7 @@
             );
           }
           return (
-            Ce(n, [
+            _createClass(n, [
               {
                 key: "log",
                 value: function () {
@@ -6932,7 +6960,7 @@
                     var n = this.isAlipay && !this.jsBridgeReady;
                     !n &&
                     this.monitorConfigInited &&
-                    Object(ve["a"])(
+                    Object(remoteLogUtils["a"])(
                       this.userConfig,
                       this.requiredFields,
                       this._warn.bind(this)
@@ -6945,7 +6973,7 @@
               {
                 key: "logError",
                 value: function (e, t) {
-                  Object(ve["d"])(
+                  Object(remoteLogUtils["d"])(
                     e,
                     Wt,
                     { log: this.log.bind(this), _warn: this._warn.bind(this) },
@@ -6991,9 +7019,9 @@
                 key: "config",
                 value: function (e) {
                   e &&
-                    "object" === Ee(e) &&
-                    (Object(ve["g"])(this.userConfig, e),
-                    Object(ve["a"])(
+                    "object" === _typeof(e) &&
+                    (Object(remoteLogUtils["g"])(this.userConfig, e),
+                    Object(remoteLogUtils["a"])(
                       this.userConfig,
                       this.requiredFields,
                       this._warn.bind(this)
@@ -7019,7 +7047,7 @@
               {
                 key: "_log",
                 value: function (e, t) {
-                  var n = Object(ve["f"])(e, this);
+                  var n = Object(remoteLogUtils["f"])(e, this);
                   if (n) {
                     this.getSpmInfo();
                     var i = this.parseParam4(n),
@@ -7492,9 +7520,9 @@
       }
       function gn(e, t) {
         undefined === t && (t = 120);
-        var n = vn(me) || "";
+        var n = vn(benefitIdStorageKey) || "";
         return !n && e
-          ? (nn.info("benefitId", [e, t]), bn(me, e, 1e3 * t), e)
+          ? (nn.info("benefitId", [e, t]), bn(benefitIdStorageKey, e, 1e3 * t), e)
           : n;
       }
       function bn(e, t, n) {
@@ -7898,7 +7926,9 @@
               {
                 className: extractClassNameFromArgs()(
                   zn.a.fontList,
-                  ((t = {}), (t[zn.a.degradeStatic] = i === oe.Static), t)
+                  ((t = {}),
+                  (t[zn.a.degradeStatic] = i === degradeLevelCodes.Static),
+                  t)
                 ),
               },
               n.map(function (e) {
@@ -8078,7 +8108,7 @@
             g = e.onNext,
             b = e.onFreemodeChanged,
             v = e.onActiveFontChanged,
-            A = c === oe.Static;
+            A = c === degradeLevelCodes.Static;
           return (
             Object(React["useEffect"])(function () {
               qn.call("expoCheck");
@@ -8110,7 +8140,7 @@
                   "data-aspm-expo": true,
                   style: {
                     backgroundImage:
-                      c === oe.Static
+                      c === degradeLevelCodes.Static
                         ? "url(" +
                           (null === (o = m) || undefined === o
                             ? undefined
@@ -8123,10 +8153,11 @@
                             ? undefined
                             : s.url) +
                           ")",
-                    backgroundSize: c === oe.Static ? "83.75%" : "contain",
+                    backgroundSize:
+                      c === degradeLevelCodes.Static ? "83.75%" : "contain",
                   },
                 }),
-                c === oe.None &&
+                c === degradeLevelCodes.None &&
                   React_.a.createElement(
                     "div",
                     { className: Ln.a.buttonGroup },
@@ -9357,7 +9388,7 @@
                   "data-aspm-click": "c63924.d131826",
                   "data-aspm-expo": true,
                   placeholder: "请输入中文汉字",
-                  value: n === ge ? "" : n,
+                  value: n === clickToSignText ? "" : n,
                   onChange: function (e) {
                     return u(e.target.value);
                   },
@@ -10554,7 +10585,7 @@
               return this.container;
             }),
             (e.prototype.getText = function () {
-              return this.text.text === ge.split("").join("\n")
+              return this.text.text === clickToSignText.split("").join("\n")
                 ? ""
                 : this.text.text;
             }),
@@ -10808,8 +10839,8 @@
                             acceleration: Yr.a.acceleration,
                           },
                           fixSize: true,
-                          width: se * this.options.rate,
-                          height: se * this.options.rate,
+                          width: baseScreenWidth * this.options.rate,
+                          height: baseScreenWidth * this.options.rate,
                           dpi: 2,
                           fps: a ? 30 : 60,
                           canvasId: "artboard",
@@ -10970,7 +11001,8 @@
                                   (this_.mainMask = c);
                               }
                               (this_.tablet = new qr(this_.app.renderer)),
-                                this_.options.degradeLevel === oe.None &&
+                                this_.options.degradeLevel ===
+                                  degradeLevelCodes.None &&
                                   (this_.tabletContainer.addChild(
                                     this_.tablet.getContainer()
                                   ),
@@ -11087,7 +11119,7 @@
                     this.container,
                     g
                   )),
-                  (c = Wr["scale"](l, ue, ue, "transparent").toDataURL())),
+                  (c = Wr["scale"](l, basePhotoWidth, basePhotoWidth, "transparent").toDataURL())),
                 (null === (o = e) || undefined === o
                   ? undefined
                   : o.iosSnapshotImageData) &&
@@ -11104,7 +11136,7 @@
                     this.container,
                     g
                   )),
-                  (u = Wr["scale"](l, le, le).toDataURL("image/jpeg")),
+                  (u = Wr["scale"](l, basePrintWidth, basePrintWidth).toDataURL("image/jpeg")),
                   (this.saveContainer.visible = false)),
                 this.mainMask &&
                   (this.stickerContainer.addChild(this.mainMask),
@@ -11141,7 +11173,7 @@
                 return __generator(this, function (n) {
                   return (
                     (this.activeFont = e),
-                    this.options.degradeLevel === oe.None &&
+                    this.options.degradeLevel === degradeLevelCodes.None &&
                       (null === (t = this.getTablet()) ||
                         undefined === t ||
                         t.changeFont(e)),
@@ -11204,8 +11236,8 @@
                 return __generator(this, function (I) {
                   switch (I.label) {
                     case 0:
-                      return this.options.degradeLevel === oe.Static &&
-                        this.activeFont
+                      return this.options.degradeLevel ===
+                        degradeLevelCodes.Static && this.activeFont
                         ? ((r = this),
                           [
                             4,
@@ -11273,7 +11305,7 @@
                           this.mainContainer,
                           g
                         )),
-                        (k = Wr["scale"](b, le, le, 16777215).toDataURL(
+                        (k = Wr["scale"](b, basePrintWidth, basePrintWidth, 16777215).toDataURL(
                           "image/jpeg"
                         )),
                         (this.writeRegionRatio =
@@ -11558,7 +11590,7 @@
                           4,
                           AlipayJSAPI.call("uploadFileToAliCloud", {
                             filePath: "https://shared/sxf_tablet.txt",
-                            bizType: ie.Tablet,
+                            bizType: bizTypes.Tablet,
                             fileType: "txt",
                             needDelete: true,
                             hideLoading: true,
@@ -11635,7 +11667,7 @@
                   stickers: l,
                   tablet: {
                     degradeFontImgId:
-                      this.options.degradeLevel === oe.None
+                      this.options.degradeLevel === degradeLevelCodes.None
                         ? ""
                         : (null === (n = this.activeFont) || undefined === n
                             ? undefined
@@ -11706,7 +11738,7 @@
                   switch (n.label) {
                     case 0:
                       return (
-                        (t = this), [4, this.generateSpriteFromURI("" + pe + e)]
+                        (t = this), [4, this.generateSpriteFromURI("" + base64ImagePrefix + e)]
                       );
                     case 1:
                       return (
@@ -11743,7 +11775,7 @@
             }),
             (e.prototype.uploadFuImage = function (e, t, n) {
               return (
-                undefined === t && (t = ie.Fu),
+                undefined === t && (t = bizTypes.Fu),
                 undefined === n && (n = 4),
                 __awaiter(this, undefined, Promise, function () {
                   var i;
@@ -11793,7 +11825,7 @@
                         [
                           4,
                           AlipayJSAPI.call("startXMediaCoreBiz", {
-                            bizId: ie.Fu,
+                            bizId: bizTypes.Fu,
                             bizType: "commonCV",
                             options: { modelCloudKey: t },
                           }),
@@ -11859,7 +11891,9 @@
                         return [
                           2,
                           {
-                            success: i === fuErrorCodes.FU || i === fuErrorCodes.UNKNOWN,
+                            success:
+                              i === fuErrorCodes.FU ||
+                              i === fuErrorCodes.UNKNOWN,
                             errorMessage: o || fuDetectErrorHints.NotFu,
                             errorCode: r || fuDetectErrorCodes.NotFu,
                             originalResult: n,
@@ -11870,7 +11904,9 @@
                     case 9:
                       return (
                         v.trys.push([9, 16, , 17]),
-                        i !== fuErrorCodes.UNKNOWN ? [3, 14] : [4, this.uploadFuImage(e)]
+                        i !== fuErrorCodes.UNKNOWN
+                          ? [3, 14]
+                          : [4, this.uploadFuImage(e)]
                       );
                     case 10:
                       return (
@@ -12385,7 +12421,9 @@
                   code: fuErrorCodes.NOTFU,
                   errorCode: fuDetectErrorCodes.NotFu,
                   message:
-                    t === this.options.modelCloudKeyFu ? fuDetectErrorHints.NotFu : fuDetectErrorHints.CoverFu,
+                    t === this.options.modelCloudKeyFu
+                      ? fuDetectErrorHints.NotFu
+                      : fuDetectErrorHints.CoverFu,
                 };
               if (e.body) {
                 var n = e.body.filter(function (e) {
@@ -12428,16 +12466,24 @@
                             ? fuDetectErrorHints.NotFu
                             : fuDetectErrorHints.CoverFu,
                       }
-                    : { code: fuErrorCodes.FU, errorCode: fuDetectErrorCodes.Fu };
+                    : {
+                        code: fuErrorCodes.FU,
+                        errorCode: fuDetectErrorCodes.Fu,
+                      };
                 }
                 return {
                   code: fuErrorCodes.NOTFU,
                   errorCode: fuDetectErrorCodes.NotFu,
                   message:
-                    t === this.options.modelCloudKeyFu ? fuDetectErrorHints.NotFu : fuDetectErrorHints.CoverFu,
+                    t === this.options.modelCloudKeyFu
+                      ? fuDetectErrorHints.NotFu
+                      : fuDetectErrorHints.CoverFu,
                 };
               }
-              return { code: fuErrorCodes.UNKNOWN, errorCode: fuDetectErrorCodes.NotFu };
+              return {
+                code: fuErrorCodes.UNKNOWN,
+                errorCode: fuDetectErrorCodes.NotFu,
+              };
             }),
             (e.prototype.generateSpriteFromURI = function (e) {
               return __awaiter(this, undefined, Promise, function () {
@@ -12643,8 +12689,8 @@
             Object.defineProperty(e.prototype, "renderer", {
               get: function () {
                 return {
-                  width: se * this.options.rate * 2,
-                  height: se * this.options.rate * 2,
+                  width: baseScreenWidth * this.options.rate * 2,
+                  height: baseScreenWidth * this.options.rate * 2,
                   resolution: 2,
                 };
               },
@@ -12845,11 +12891,11 @@
                     handFuStickTypeVoList: [],
                   };
                 try {
-                  L = JSON.parse(U.getItem(de) || "{}");
+                  L = JSON.parse(U.getItem(h5dataStorageKey) || "{}");
                 } catch (e) {
                   return void a();
                 }
-                var G = t.degradeLevel === oe.Static || n.write;
+                var G = t.degradeLevel === degradeLevelCodes.Static || n.write;
                 I(G);
                 var Q,
                   H,
@@ -12875,7 +12921,7 @@
                 }
                 if (
                   (U.setItem(
-                    de,
+                    h5dataStorageKey,
                     JSON.stringify(
                       __assign(__assign({}, L), {
                         resourceVersion: t.resourceVersion,
@@ -12957,7 +13003,9 @@
                     prePeriod: !!(null === (e = t) || undefined === e
                       ? undefined
                       : e.prePeriod),
-                    degradeLevel: G ? oe.Static : oe.None,
+                    degradeLevel: G
+                      ? degradeLevelCodes.Static
+                      : degradeLevelCodes.None,
                     writeRegionThreshold: dn(
                       null === (i = r) || undefined === i
                         ? undefined
@@ -13380,7 +13428,7 @@
           s = { resourceVersion: 0 };
         try {
           var l = window.localStorage;
-          s = JSON.parse(l.getItem(de) || "{}");
+          s = JSON.parse(l.getItem(h5dataStorageKey) || "{}");
         } catch (e) {}
         var c = s.resourceVersion;
         return (
@@ -14061,7 +14109,7 @@
           var t = e.cardType,
             n = e.imageId,
             a = e.customClassName,
-            o = Er(n) || be[t],
+            o = Er(n) || fuCardImages[t],
             s = po[t],
             l = Object(React["useMemo"])(
               function () {
@@ -14181,7 +14229,13 @@
             )
           );
         },
-        bo = [fuCardCodes.JING_YE, fuCardCodes.FU_QIANG, fuCardCodes.AI_GUO, fuCardCodes.HE_XIE, fuCardCodes.YOU_SHAN],
+        bo = [
+          fuCardCodes.JING_YE,
+          fuCardCodes.FU_QIANG,
+          fuCardCodes.AI_GUO,
+          fuCardCodes.HE_XIE,
+          fuCardCodes.YOU_SHAN,
+        ],
         Main = function (e) {
           var t = e.backgroundVisible;
           return React_.a.createElement(
@@ -14335,7 +14389,7 @@
             return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
-        yo = be[fuCardCodes.JING_YE],
+        yo = fuCardImages[fuCardCodes.JING_YE],
         wo = function (e, t) {
           return __awaiter(undefined, undefined, undefined, function () {
             return __generator(this, function (n) {
@@ -14343,7 +14397,7 @@
                 2,
                 window.ap.call("AlipayNewYearNebulaPlugin.showFuCard", {
                   showFuCard: e,
-                  sourceType: ne,
+                  sourceType: sourceType,
                   extParams: { customFuImage: t },
                 }),
               ];
@@ -14371,7 +14425,7 @@
                 try {
                   return window.ap.call("downloadImage", {
                     multimediaID: p,
-                    business: ie.CompletePNG,
+                    business: bizTypes.CompletePNG,
                     match: 2,
                   });
                 } catch (e) {
@@ -15118,7 +15172,7 @@
               2,
               window.ap.call("downloadImage", {
                 multimediaID: e,
-                business: ie.CompletePNG,
+                business: bizTypes.CompletePNG,
                 match: 2,
               }),
             ];
@@ -15339,7 +15393,7 @@
                         4,
                         window.ap.call("AlipayNewYearNebulaPlugin.showFuCard", {
                           showFuCard: n,
-                          sourceType: ne,
+                          sourceType: sourceType,
                           extParams: { customFuImage: i },
                         }),
                       ]
@@ -15905,7 +15959,7 @@
             nt = Object(React["useState"])(false),
             it = nt[0],
             rt = nt[1],
-            at = Object(React["useState"])(ge),
+            at = Object(React["useState"])(clickToSignText),
             ot = at[0],
             st = at[1],
             lt = Object(React["useState"])(true),
@@ -16221,7 +16275,7 @@
                               ),
                               (null === (S = homeInitResult) || undefined === S
                                 ? undefined
-                                : S.degradeLevel) === oe.Full)
+                                : S.degradeLevel) === degradeLevelCodes.Full)
                             )
                               return (
                                 setCurrentPage(pageMode.Cover), gt(false), [2]
@@ -16355,7 +16409,7 @@
                                 4,
                                 AlipayJSAPI.call("downloadImage", {
                                   multimediaID: homeInitResult.lastImgId,
-                                  business: ie.CompletePNG,
+                                  business: bizTypes.CompletePNG,
                                   match: 2,
                                 }),
                               ]
@@ -16564,13 +16618,13 @@
                           case 34:
                             return (
                               (A = window.localStorage),
-                              (_ = JSON.parse(A.getItem(de) || "{}")),
+                              (_ = JSON.parse(A.getItem(h5dataStorageKey) || "{}")),
                               _.guideShown
                                 ? [3, 35]
                                 : (setCurrentPage(pageMode.Guide),
-                                  (y = JSON.parse(A.getItem(de) || "{}")),
+                                  (y = JSON.parse(A.getItem(h5dataStorageKey) || "{}")),
                                   A.setItem(
-                                    de,
+                                    h5dataStorageKey,
                                     JSON.stringify(
                                       __assign(__assign({}, y), {
                                         guideShown: true,
@@ -16779,7 +16833,7 @@
                           4,
                           AlipayJSAPI.call("downloadImage", {
                             multimediaID: t,
-                            business: ie.CompletePNG,
+                            business: bizTypes.CompletePNG,
                             match: 2,
                           }),
                         ]
@@ -16833,7 +16887,7 @@
                           Zn[f]++,
                           Yn(Zn)),
                         (v = undefined),
-                        c && l ? [4, Bi.uploadFuImage(c, ie.Fu)] : [3, 11]
+                        c && l ? [4, Bi.uploadFuImage(c, bizTypes.Fu)] : [3, 11]
                       );
                     case 10:
                       if (((v = B.sent()), !v)) return Ze(true), Xe(""), [2];
@@ -16845,7 +16899,8 @@
                               ? undefined
                               : C.prePeriod
                           )
-                          ? homeInitResult.degradeLevel === oe.Static ||
+                          ? homeInitResult.degradeLevel ===
+                              degradeLevelCodes.Static ||
                             (null !== (I = downgradeResult) &&
                               undefined !== I &&
                               I.write)
@@ -16866,7 +16921,7 @@
                         : [3, 15];
                     case 12:
                       return u
-                        ? [4, Bi.uploadFuImage(u, ie.FuPNG, 3)]
+                        ? [4, Bi.uploadFuImage(u, bizTypes.FuPNG, 3)]
                         : [3, 14];
                     case 13:
                       if (((A = B.sent()), !A)) return Ze(true), Xe(""), [2];
@@ -16897,7 +16952,7 @@
                         o &&
                           (Bi.hideTablet(),
                           Bi.showBackground(),
-                          Bi.updateStamp(ge),
+                          Bi.updateStamp(clickToSignText),
                           null === (R = Bi.getStamp()) ||
                             undefined === R ||
                             R.show(true),
@@ -16920,7 +16975,7 @@
                         null === (e = Bi.getStamp()) ||
                           undefined === e ||
                           e.hide(),
-                        st(ge),
+                        st(clickToSignText),
                         ut(true),
                         Qt(""),
                         Yi ? [4, Bi.changeFont(activeFont)] : [3, 2]
@@ -17014,7 +17069,7 @@
                               AlipayJSAPI.call("uploadImage", {
                                 data: s.replace(/^.+base64,/g, ""),
                                 dataType: "dataURL",
-                                business: ie.Complete,
+                                business: bizTypes.Complete,
                                 publicDomain: true,
                               }),
                             ]
@@ -17035,7 +17090,7 @@
                           (l = ""),
                           (null === (S = homeInitResult) || undefined === S
                             ? undefined
-                            : S.degradeLevel) !== oe.None
+                            : S.degradeLevel) !== degradeLevelCodes.None
                             ? [3, 7]
                             : [4, Bi.saveTableFile()])
                         : [3, 18];
@@ -17050,7 +17105,7 @@
                             data: c,
                             dataType: "dataURL",
                             compress: 3,
-                            business: ie.CompletePNG,
+                            business: bizTypes.CompletePNG,
                             publicDomain: true,
                           }),
                         ]
@@ -17273,9 +17328,9 @@
             onStampChanged = function (e) {
               Qt(""),
                 st(e),
-                e && e !== ge
+                e && e !== clickToSignText
                   ? e.split("").filter(function (e) {
-                      return !fe.test(e);
+                      return !isChineseRegex.test(e);
                     }).length > 0
                     ? (ut(true), Qt("只能输入中文汉字哦"))
                     : e.length > 6
@@ -17327,7 +17382,7 @@
                         Bi.reset(),
                         pt(""),
                         Mt(""),
-                        st(ge),
+                        st(clickToSignText),
                         ut(true),
                         setFreemode(false),
                         setAlreadyDrawn(false),
@@ -17433,7 +17488,7 @@
                             "AlipayNewYearNebulaPlugin.showFuCard",
                             {
                               showFuCard: t,
-                              sourceType: ne,
+                              sourceType: sourceType,
                               extParams: { customFuImage: 1 === en ? mt : "" },
                             }
                           ),
@@ -17487,8 +17542,8 @@
                     printUrl && ni && qt
                       ? AlipayJSAPI.pushWindow({
                           url: printUrl
-                            .replace(he.benefitId, qt)
-                            .replace(he.mediaId, ni),
+                            .replace(printTemplates.benefitId, qt)
+                            .replace(printTemplates.mediaId, ni),
                         })
                       : (Ze(true),
                         Xe(""),
@@ -17551,7 +17606,7 @@
                             data: e.replace(/^.+base64,/g, ""),
                             dataType: "dataURL",
                             compress: 3,
-                            business: ie.CompletePNG,
+                            business: bizTypes.CompletePNG,
                             publicDomain: true,
                           }),
                         ]
@@ -17969,15 +18024,15 @@
                 ? undefined
                 : s.prePeriod
             )
-              ? re
-              : ae)[currentPage] ||
+              ? prePeriodTitles
+              : periodTitles)[currentPage] ||
             ((
               null === (l = homeInitResult) || undefined === l
                 ? undefined
                 : l.prePeriod
             )
-              ? re
-              : ae)[pageMode.Empty];
+              ? prePeriodTitles
+              : periodTitles)[pageMode.Empty];
           return React_.a.createElement(
             React_.a.Fragment,
             null,
@@ -18135,7 +18190,9 @@
                       null,
                       React_.a.createElement($n, {
                         fonts: fonts || [],
-                        degradeLevel: Yi ? oe.Static : oe.None,
+                        degradeLevel: Yi
+                          ? degradeLevelCodes.Static
+                          : degradeLevelCodes.None,
                         isAlreadyDrawn: isAlreadyDrawn,
                         freemode: freemode,
                         activeFont: activeFont,
@@ -18179,9 +18236,9 @@
                       onCancel: function () {
                         ut(true),
                           rt(false),
-                          st(ge),
+                          st(clickToSignText),
                           Qt(""),
-                          Bi.updateStamp(ge),
+                          Bi.updateStamp(clickToSignText),
                           Es.click("c64127.d132252");
                       },
                       onClose: function () {
@@ -18931,7 +18988,7 @@
     },
     hwum: function (module, exports, __webpack_require__) {
       "use strict";
-      (function (e) {
+      (function (globalScope) {
         __webpack_require__.d(exports, "a", function () {
           return b;
         }),
@@ -19182,7 +19239,7 @@
             ));
         }
         function I() {
-          return eval ? (0, eval)("this") : e || window;
+          return eval ? (0, eval)("this") : globalScope || window;
         }
         function P() {
           return E || (E = B()), E;
