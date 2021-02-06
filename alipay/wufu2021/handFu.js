@@ -1163,7 +1163,7 @@
                 {
                   key: "start",
                   value: function () {
-                    var e = this;
+                    var this_ = this;
                     this.setEventEnabled(true),
                       (this.hitArea = new Tiny.Rectangle(
                         0,
@@ -1172,26 +1172,26 @@
                         Tiny.WIN_SIZE.height
                       ));
                     var n = function (t) {
-                        (e.data = t.data),
-                          (e.isPointerDown = true),
-                          e.beginStroke();
+                        (this_.data = t.data),
+                          (this_.isPointerDown = true),
+                          this_.beginStroke();
                       },
                       i = function (n) {
-                        if ((n.stopPropagation(), e.data)) {
-                          var i = e.data.getLocalPosition(e.parent),
+                        if ((n.stopPropagation(), this_.data)) {
+                          var i = this_.data.getLocalPosition(this_.parent),
                             r = i.x,
                             a = i.y;
-                          e.isPointerDown &&
-                            (e.children.length > t.maxStroke ||
-                              ((e.isPointerDown = true),
-                              e.addStrokePosition(r, a)));
+                          this_.isPointerDown &&
+                            (this_.children.length > t.maxStroke ||
+                              ((this_.isPointerDown = true),
+                              this_.addStrokePosition(r, a)));
                         }
                       },
                       r = function (t) {
-                        e.isPointerDown &&
-                          ((e.isPointerDown = false),
-                          (e.data = null),
-                          e.endStroke());
+                        this_.isPointerDown &&
+                          ((this_.isPointerDown = false),
+                          (this_.data = null),
+                          this_.endStroke());
                       };
                     this.on("pointerdown", n),
                       this.on("pointermove", i),
@@ -1515,7 +1515,7 @@
                 {
                   key: "play",
                   value: function () {
-                    var e = this;
+                    var this_ = this;
                     this.state === l.STOPPED &&
                       ((this.currentStroke = []),
                       this.removeChildren(),
@@ -1527,10 +1527,10 @@
                       this.timer.on("update", function (t) {
                         for (
                           var n = 0;
-                          n < (60 / Tiny.Application.FPS) * e.speed;
+                          n < (60 / Tiny.Application.FPS) * this_.speed;
                           n++
                         )
-                          e.onTick();
+                          this_.onTick();
                       }),
                       this.timer.start(),
                       this.emit("start");
@@ -2136,11 +2136,11 @@
                 {
                   key: "setAnimationConfig",
                   value: function (e, t) {
-                    var n = this;
+                    var this_ = this;
                     (this.displayObject.updateTransform = function () {
-                      n.tweenGroup.update(),
-                        n.displayObject.containerUpdateTransform.call(
-                          n.displayObject
+                      this_.tweenGroup.update(),
+                        this_.displayObject.containerUpdateTransform.call(
+                          this_.displayObject
                         );
                     }),
                       (this.useRelativePositionValue = t);
@@ -3729,7 +3729,7 @@
               return n && e(t.prototype, n), i && e(t, i), t;
             };
           })(),
-          i =
+          __assign =
             Object.assign ||
             function (e) {
               for (var t = 1; t < arguments.length; t++) {
@@ -4098,7 +4098,7 @@
                           "breakWords",
                           "wordWrapWidth",
                         ])),
-                      s = i(
+                      s = __assign(
                         { wordWrap: !!n, breakWords: !!n, wordWrapWidth: n },
                         o
                       );
@@ -4478,9 +4478,9 @@
                 {
                   key: "bindEvent",
                   value: function () {
-                    var e = this;
+                    var this_ = this;
                     this.on("pointerdown", function (t) {
-                      e.stage && e.stage.removeChild(e);
+                      this_.stage && this_.stage.removeChild(this_);
                     });
                   },
                 },
@@ -4553,7 +4553,7 @@
                 {
                   key: "show",
                   value: function (e) {
-                    var t = this;
+                    var this_ = this;
                     if (this.stage) {
                       this.stage.removeChild(this),
                         this.render(e),
@@ -4563,7 +4563,8 @@
                         times: 1,
                       });
                       n.on("complete", function (e) {
-                        t.stage.children.length && t.stage.removeChild(t),
+                        this_.stage.children.length &&
+                          this_.stage.removeChild(this_),
                           n.destroy();
                       }),
                         n.start();
@@ -4836,16 +4837,16 @@
         React_ = __webpack_require__.n(React),
         ReactDOM = __webpack_require__("faye"),
         ReactDOM_ = __webpack_require__.n(ReactDOM);
-      function s(e) {
-        var t =
+      function loadPlugins(component) {
+        var options =
             arguments.length > 1 && undefined !== arguments[1]
               ? arguments[1]
               : {},
-          n = t.ctx,
-          i = t.plugins;
-        return i.reduce(function (e, t) {
-          return t(e, n);
-        }, e);
+          ctx = options.ctx,
+          plugins = options.plugins;
+        return plugins.reduce(function (component, plugin) {
+          return plugin(component, ctx);
+        }, component);
       }
       function l(e) {
         for (var t = 1; t < arguments.length; t++) {
@@ -4858,36 +4859,39 @@
               })
             )),
             i.forEach(function (t) {
-              c(e, t, n[t]);
+              objectDefine(e, t, n[t]);
             });
         }
         return e;
       }
-      function c(e, t, n) {
+      function objectDefine(obj, key, value) {
         return (
-          t in e
-            ? Object.defineProperty(e, t, {
-                value: n,
+          key in obj
+            ? Object.defineProperty(obj, key, {
+                value: value,
                 enumerable: true,
                 configurable: true,
                 writable: true,
               })
-            : (e[t] = n),
-          e
+            : (obj[key] = value),
+          obj
         );
       }
-      var u = [];
-      function wrapper(component) {
+      var plugins = [];
+      function wrapper(rawComponent) {
         return function (id) {
-          var element = window.$morpho.utils.getComponentById(id),
-            wrappedComponent = s(component, { ctx: element, plugins: u });
-          (element.rawComponent = component),
-            (element.wrappedComponent = wrappedComponent),
-            (element.mount = function () {
+          var ctx = window.$morpho.utils.getComponentById(id),
+            wrappedComponent = loadPlugins(rawComponent, {
+              ctx: ctx,
+              plugins: plugins,
+            });
+          (ctx.rawComponent = rawComponent),
+            (ctx.wrappedComponent = wrappedComponent),
+            (ctx.mount = function () {
               ReactDOM_.a.render(
                 React_.a.createElement(
                   wrappedComponent,
-                  l({}, element.schemaData, { __id: id })
+                  l({}, ctx.schemaData, { __id: id })
                 ),
                 document.querySelector(
                   "#".concat(id, " .component-mounted-node")
@@ -4897,15 +4901,15 @@
         };
       }
       var m = __webpack_require__("iczh"),
-        p = __webpack_require__.n(m),
+        extractClassNameFromArgs = __webpack_require__.n(m),
         f = __webpack_require__("ymJX"),
-        h = __webpack_require__.n(f);
+        className$0 = __webpack_require__.n(f);
       __webpack_require__("cVG9"),
         __webpack_require__("peOq"),
         __webpack_require__("hh8c");
-      function g() {
+      function __assign() {
         return (
-          (g =
+          (__assign =
             Object.assign ||
             function (e) {
               for (var t = 1; t < arguments.length; t++) {
@@ -4915,10 +4919,10 @@
               }
               return e;
             }),
-          g.apply(this, arguments)
+          __assign.apply(this, arguments)
         );
       }
-      function b(e, t) {
+      function filterObjectProperties(e, t) {
         if (null == e) return {};
         var n,
           i,
@@ -4928,57 +4932,64 @@
           (n = a[i]), t.indexOf(n) >= 0 || (r[n] = e[n]);
         return r;
       }
-      function v(e, t) {
+      function defineProto(e, t) {
         (e.prototype = Object.create(t.prototype)),
           (e.prototype.constructor = e),
           (e.__proto__ = t);
       }
-      function A(e, t) {
-        return e.classList
-          ? !!t && e.classList.contains(t)
+      function isOfClass(element, className) {
+        return element.classList
+          ? !!className && element.classList.contains(className)
           : -1 !==
-              (" " + (e.className.baseVal || e.className) + " ").indexOf(
-                " " + t + " "
-              );
+              (
+                " " +
+                (element.className.baseVal || element.className) +
+                " "
+              ).indexOf(" " + className + " ");
       }
-      function _(e, t) {
-        e.classList
-          ? e.classList.add(t)
-          : A(e, t) ||
-            ("string" === typeof e.className
-              ? (e.className = e.className + " " + t)
-              : e.setAttribute(
+      function addClass(element, className) {
+        element.classList
+          ? element.classList.add(className)
+          : isOfClass(element, className) ||
+            ("string" === typeof element.className
+              ? (element.className = element.className + " " + className)
+              : element.setAttribute(
                   "class",
-                  ((e.className && e.className.baseVal) || "") + " " + t
+                  ((element.className && element.className.baseVal) || "") +
+                    " " +
+                    className
                 ));
       }
-      function y(e, t) {
-        return e
-          .replace(new RegExp("(^|\\s)" + t + "(?:\\s|$)", "g"), "$1")
+      function trimClassName(className, removedName) {
+        return className
+          .replace(new RegExp("(^|\\s)" + removedName + "(?:\\s|$)", "g"), "$1")
           .replace(/\s+/g, " ")
           .replace(/^\s*|\s*$/g, "");
       }
-      function w(e, t) {
-        e.classList
-          ? e.classList.remove(t)
-          : "string" === typeof e.className
-          ? (e.className = y(e.className, t))
-          : e.setAttribute(
+      function removeClass(element, className) {
+        element.classList
+          ? element.classList.remove(className)
+          : "string" === typeof element.className
+          ? (element.className = trimClassName(element.className, className))
+          : element.setAttribute(
               "class",
-              y((e.className && e.className.baseVal) || "", t)
+              trimClassName(
+                (element.className && element.className.baseVal) || "",
+                className
+              )
             );
       }
-      var k = { disabled: false },
-        x = React_.a.createContext(null),
-        E = "unmounted",
-        S = "exited",
-        T = "entering",
-        C = "entered",
-        I = "exiting",
-        P = (function (e) {
+      var options = { disabled: false },
+        context = React_.a.createContext(null),
+        UNMOUNTED = "unmounted",
+        EXITED = "exited",
+        ENTERING = "entering",
+        ENTERED = "entered",
+        EXITING = "exiting",
+        P = (function (Component) {
           function t(t, n) {
             var i;
-            i = e.call(this, t, n) || this;
+            i = Component.call(this, t, n) || this;
             var r,
               a = n,
               o = a && !a.isMounting ? t.enter : t.appear;
@@ -4986,38 +4997,38 @@
               (i.appearStatus = null),
               t.in
                 ? o
-                  ? ((r = S), (i.appearStatus = T))
-                  : (r = C)
-                : (r = t.unmountOnExit || t.mountOnEnter ? E : S),
+                  ? ((r = EXITED), (i.appearStatus = ENTERING))
+                  : (r = ENTERED)
+                : (r = t.unmountOnExit || t.mountOnEnter ? UNMOUNTED : EXITED),
               (i.state = { status: r }),
               (i.nextCallback = null),
               i
             );
           }
-          v(t, e),
+          defineProto(t, Component),
             (t.getDerivedStateFromProps = function (e, t) {
               var n = e.in;
-              return n && t.status === E ? { status: S } : null;
+              return n && t.status === UNMOUNTED ? { status: EXITED } : null;
             });
-          var n = t.prototype;
+          var app = t.prototype;
           return (
-            (n.componentDidMount = function () {
+            (app.componentDidMount = function () {
               this.updateStatus(true, this.appearStatus);
             }),
-            (n.componentDidUpdate = function (e) {
+            (app.componentDidUpdate = function (e) {
               var t = null;
               if (e !== this.props) {
                 var n = this.state.status;
                 this.props.in
-                  ? n !== T && n !== C && (t = T)
-                  : (n !== T && n !== C) || (t = I);
+                  ? n !== ENTERING && n !== ENTERED && (t = ENTERING)
+                  : (n !== ENTERING && n !== ENTERED) || (t = EXITING);
               }
               this.updateStatus(false, t);
             }),
-            (n.componentWillUnmount = function () {
+            (app.componentWillUnmount = function () {
               this.cancelNextCallback();
             }),
-            (n.getTimeouts = function () {
+            (app.getTimeouts = function () {
               var e,
                 t,
                 n,
@@ -5032,16 +5043,16 @@
                 { exit: e, enter: t, appear: n }
               );
             }),
-            (n.updateStatus = function (e, t) {
+            (app.updateStatus = function (e, t) {
               undefined === e && (e = false),
                 null !== t
                   ? (this.cancelNextCallback(),
-                    t === T ? this.performEnter(e) : this.performExit())
+                    t === ENTERING ? this.performEnter(e) : this.performExit())
                   : this.props.unmountOnExit &&
-                    this.state.status === S &&
-                    this.setState({ status: E });
+                    this.state.status === EXITED &&
+                    this.setState({ status: UNMOUNTED });
             }),
-            (n.performEnter = function (e) {
+            (app.performEnter = function (e) {
               var t = this,
                 n = this.props.enter,
                 i = this.context ? this.context.isMounting : e,
@@ -5052,49 +5063,49 @@
                 s = r[1],
                 l = this.getTimeouts(),
                 c = i ? l.appear : l.enter;
-              (!e && !n) || k.disabled
-                ? this.safeSetState({ status: C }, function () {
+              (!e && !n) || options.disabled
+                ? this.safeSetState({ status: ENTERED }, function () {
                     t.props.onEntered(a);
                   })
                 : (this.props.onEnter(a, s),
-                  this.safeSetState({ status: T }, function () {
+                  this.safeSetState({ status: ENTERING }, function () {
                     t.props.onEntering(a, s),
                       t.onTransitionEnd(c, function () {
-                        t.safeSetState({ status: C }, function () {
+                        t.safeSetState({ status: ENTERED }, function () {
                           t.props.onEntered(a, s);
                         });
                       });
                   }));
             }),
-            (n.performExit = function () {
+            (app.performExit = function () {
               var e = this,
                 t = this.props.exit,
                 n = this.getTimeouts(),
                 i = this.props.nodeRef
                   ? undefined
                   : ReactDOM_.a.findDOMNode(this);
-              t && !k.disabled
+              t && !options.disabled
                 ? (this.props.onExit(i),
-                  this.safeSetState({ status: I }, function () {
+                  this.safeSetState({ status: EXITING }, function () {
                     e.props.onExiting(i),
                       e.onTransitionEnd(n.exit, function () {
-                        e.safeSetState({ status: S }, function () {
+                        e.safeSetState({ status: EXITED }, function () {
                           e.props.onExited(i);
                         });
                       });
                   }))
-                : this.safeSetState({ status: S }, function () {
+                : this.safeSetState({ status: EXITED }, function () {
                     e.props.onExited(i);
                   });
             }),
-            (n.cancelNextCallback = function () {
+            (app.cancelNextCallback = function () {
               null !== this.nextCallback &&
                 (this.nextCallback.cancel(), (this.nextCallback = null));
             }),
-            (n.safeSetState = function (e, t) {
+            (app.safeSetState = function (e, t) {
               (t = this.setNextCallback(t)), this.setState(e, t);
             }),
-            (n.setNextCallback = function (e) {
+            (app.setNextCallback = function (e) {
               var t = this,
                 n = true;
               return (
@@ -5107,7 +5118,7 @@
                 this.nextCallback
               );
             }),
-            (n.onTransitionEnd = function (e, t) {
+            (app.onTransitionEnd = function (e, t) {
               this.setNextCallback(t);
               var n = this.props.nodeRef
                   ? this.props.nodeRef.current
@@ -5125,9 +5136,9 @@
                 null != e && setTimeout(this.nextCallback, e);
               } else setTimeout(this.nextCallback, 0);
             }),
-            (n.render = function () {
+            (app.render = function () {
               var e = this.state.status;
-              if (e === E) return null;
+              if (e === UNMOUNTED) return null;
               var t = this.props,
                 n = t.children,
                 i =
@@ -5146,7 +5157,7 @@
                   t.onExiting,
                   t.onExited,
                   t.nodeRef,
-                  b(t, [
+                  filterObjectProperties(t, [
                     "children",
                     "in",
                     "mountOnEnter",
@@ -5165,7 +5176,7 @@
                     "nodeRef",
                   ]));
               return React_.a.createElement(
-                x.Provider,
+                context.Provider,
                 { value: null },
                 "function" === typeof n
                   ? n(e, i)
@@ -5176,7 +5187,7 @@
           );
         })(React_.a.Component);
       function N() {}
-      (P.contextType = x),
+      (P.contextType = context),
         (P.defaultProps = {
           in: false,
           mountOnEnter: false,
@@ -5191,31 +5202,31 @@
           onExiting: N,
           onExited: N,
         }),
-        (P.UNMOUNTED = E),
-        (P.EXITED = S),
-        (P.ENTERING = T),
-        (P.ENTERED = C),
-        (P.EXITING = I);
+        (P.UNMOUNTED = UNMOUNTED),
+        (P.EXITED = EXITED),
+        (P.ENTERING = ENTERING),
+        (P.ENTERED = ENTERED),
+        (P.EXITING = EXITING);
       var O = P,
-        R = function (e, t) {
+        addClasses = function (element, classes) {
           return (
-            e &&
-            t &&
-            t.split(" ").forEach(function (t) {
-              return _(e, t);
+            element &&
+            classes &&
+            classes.split(" ").forEach(function (t) {
+              return addClass(element, t);
             })
           );
         },
-        B = function (e, t) {
+        removeClasses = function (element, classes) {
           return (
-            e &&
-            t &&
-            t.split(" ").forEach(function (t) {
-              return w(e, t);
+            element &&
+            classes &&
+            classes.split(" ").forEach(function (t) {
+              return removeClass(element, t);
             })
           );
         },
-        D = (function (e) {
+        D = (function (Component) {
           function t() {
             for (
               var t, n = arguments.length, i = new Array(n), r = 0;
@@ -5224,7 +5235,7 @@
             )
               i[r] = arguments[r];
             return (
-              (t = e.call.apply(e, [this].concat(i)) || this),
+              (t = Component.call.apply(Component, [this].concat(i)) || this),
               (t.appliedClasses = { appear: {}, enter: {}, exit: {} }),
               (t.onEnter = function (e, n) {
                 var i = t.resolveArguments(e, n),
@@ -5291,7 +5302,7 @@
               t
             );
           }
-          v(t, e);
+          defineProto(t, Component);
           var n = t.prototype;
           return (
             (n.addClass = function (e, t, n) {
@@ -5300,7 +5311,7 @@
                 a = r.doneClassName;
               "appear" === t && "done" === n && a && (i += " " + a),
                 "active" === n && e && e.scrollTop,
-                i && ((this.appliedClasses[t][n] = i), R(e, i));
+                i && ((this.appliedClasses[t][n] = i), addClasses(e, i));
             }),
             (n.removeClasses = function (e, t) {
               var n = this.appliedClasses[t],
@@ -5308,16 +5319,16 @@
                 r = n.active,
                 a = n.done;
               (this.appliedClasses[t] = {}),
-                i && B(e, i),
-                r && B(e, r),
-                a && B(e, a);
+                i && removeClasses(e, i),
+                r && removeClasses(e, r),
+                a && removeClasses(e, a);
             }),
             (n.render = function () {
               var e = this.props,
-                t = (e.classNames, b(e, ["classNames"]));
+                t = (e.classNames, filterObjectProperties(e, ["classNames"]));
               return React_.a.createElement(
                 O,
-                g({}, t, {
+                __assign({}, t, {
                   onEnter: this.onEnter,
                   onEntered: this.onEntered,
                   onEntering: this.onEntering,
@@ -5331,15 +5342,14 @@
           );
         })(React_.a.Component);
       D.defaultProps = { classNames: "" };
-      var errorHintsBase,
-        M,
+      var fuCardCodes,
         j,
         F,
         U,
         L,
         G = D,
         Q = __webpack_require__("rral"),
-        H = __webpack_require__.n(Q),
+        className$1 = __webpack_require__.n(Q),
         StatusCodes = {
           HAND_FU_ACTIVITY_STICK_CONFIG_ERROR: "51401",
           HAND_FU_IMG_NOT_EXIST: "51403",
@@ -5366,45 +5376,39 @@
           HAND_FU_HAS_BEEN_ACCEPT: "51437",
         },
         defaultErrorHint = "福气在路上，请稍后再试",
-        errorHints =
-          ((errorHintsBase = {}),
-          (errorHintsBase[StatusCodes.HAND_FU_DAILY_OVER_LIMIT] =
-            "今日领福卡达上限"),
-          (errorHintsBase[StatusCodes.HAND_FU_AR_REC_TIMEOUT] =
-            "写的可能不是福字，请再调整一下哦"),
-          (errorHintsBase[StatusCodes.HAND_FU_INFOSEC_ERROR] =
-            "换个签名再试试"),
-          (errorHintsBase[StatusCodes.HAND_FU_HAN_BEEN_DELETE] = "图片已删除"),
-          (errorHintsBase[StatusCodes.HAND_FU_SERVER_AR_IDENTIFY_ERROR] =
-            "遮挡福字过多，已经看不出是福字啦"),
-          (errorHintsBase[StatusCodes.HAND_FU_TEXT_LENTH_ERROR] =
-            "最多支持6个中文汉字"),
-          (errorHintsBase[StatusCodes.HAND_FU_FRIEND_ACCEPT_OVER_LIMIT] =
-            "领取手写福卡已达上限"),
-          (errorHintsBase[StatusCodes.HAND_FU_STICK_NUM_OVER_LIMIT] =
-            "贴纸太多啦，请再调整一下哦"),
-          (errorHintsBase[StatusCodes.HAND_FU_HAS_BEEN_ACCEPT] =
-            "自己只能领取一次"),
-          (errorHintsBase[StatusCodes.HAND_FU_IMG_SHARE_FINISH] =
-            "手写福卡已经被领完"),
-          errorHintsBase),
-        J = { UNKNOWN: "0", FU: "1", NOTFU: "2" },
-        X = {
+        errorHints = {
+          [StatusCodes.HAND_FU_DAILY_OVER_LIMIT]: "今日领福卡达上限",
+          [StatusCodes.HAND_FU_AR_REC_TIMEOUT]:
+            "写的可能不是福字，请再调整一下哦",
+          [StatusCodes.HAND_FU_INFOSEC_ERROR]: "换个签名再试试",
+          [StatusCodes.HAND_FU_HAN_BEEN_DELETE]: "图片已删除",
+          [StatusCodes.HAND_FU_SERVER_AR_IDENTIFY_ERROR]:
+            "遮挡福字过多，已经看不出是福字啦",
+          [StatusCodes.HAND_FU_TEXT_LENTH_ERROR]: "最多支持6个中文汉字",
+          [StatusCodes.HAND_FU_FRIEND_ACCEPT_OVER_LIMIT]:
+            "领取手写福卡已达上限",
+          [StatusCodes.HAND_FU_STICK_NUM_OVER_LIMIT]:
+            "贴纸太多啦，请再调整一下哦",
+          [StatusCodes.HAND_FU_HAS_BEEN_ACCEPT]: "自己只能领取一次",
+          [StatusCodes.HAND_FU_IMG_SHARE_FINISH]: "手写福卡已经被领完",
+        },
+        fuErrorCodes = { UNKNOWN: "0", FU: "1", NOTFU: "2" },
+        fuDetectErrorHints = {
           NotFu: "离书法家一步之遥，再调整一下试试",
           SingleFu: "一次只能写一个福字哟",
           TinyFu: "你写的福字太小了哦",
           CoverFu: "贴纸遮挡福字过多，已经看不出是福字啦",
         },
-        V = { Fu: -1, TinyFu: 1, SingleFu: 2, NotFu: 3 },
+        fuDetectErrorCodes = { Fu: -1, TinyFu: 1, SingleFu: 2, NotFu: 3 },
         q = __webpack_require__("7bjG"),
-        K = __webpack_require__.n(q);
+        Platform = __webpack_require__.n(q);
       (function (e) {
         (e["JING_YE"] = "1001"),
           (e["AI_GUO"] = "1002"),
           (e["FU_QIANG"] = "1003"),
           (e["HE_XIE"] = "1004"),
           (e["YOU_SHAN"] = "1005");
-      })(M || (M = {}));
+      })(fuCardCodes || (fuCardCodes = {}));
       var pageMode = {
           Empty: -1,
           Guide: 0,
@@ -5463,24 +5467,24 @@
         ge = "点击签名",
         be =
           ((U = {}),
-          (U[M.JING_YE] =
+          (U[fuCardCodes.JING_YE] =
             "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*0nq_QIkALsQAAAAAAAAAAAAAARQnAQ"),
-          (U[M.AI_GUO] =
+          (U[fuCardCodes.AI_GUO] =
             "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*iGssQ7H0Sw8AAAAAAAAAAAAAARQnAQ"),
-          (U[M.HE_XIE] =
+          (U[fuCardCodes.HE_XIE] =
             "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*YKBJT7fdpxMAAAAAAAAAAAAAARQnAQ"),
-          (U[M.YOU_SHAN] =
+          (U[fuCardCodes.YOU_SHAN] =
             "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*N1OlSbbPh58AAAAAAAAAAAAAARQnAQ"),
-          (U[M.FU_QIANG] =
+          (U[fuCardCodes.FU_QIANG] =
             "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*o6w8SJxXhn4AAAAAAAAAAAAAARQnAQ"),
           U),
         ve =
           ((L = {}),
-          (L[M.JING_YE] = "敬业"),
-          (L[M.AI_GUO] = "爱国"),
-          (L[M.YOU_SHAN] = "友善"),
-          (L[M.HE_XIE] = "和谐"),
-          (L[M.FU_QIANG] = "富强"),
+          (L[fuCardCodes.JING_YE] = "敬业"),
+          (L[fuCardCodes.AI_GUO] = "爱国"),
+          (L[fuCardCodes.YOU_SHAN] = "友善"),
+          (L[fuCardCodes.HE_XIE] = "和谐"),
+          (L[fuCardCodes.FU_QIANG] = "富强"),
           __webpack_require__("hwum")),
         Ae = __webpack_require__("GdIV"),
         _e = __webpack_require__.n(Ae),
@@ -5881,25 +5885,30 @@
           };
           var r = n.send;
           n.send = function (n) {
-            var i = this;
+            var this_ = this;
             function a() {
-              if (i.__interfaceMonitor__ && 4 === i.readyState)
+              if (this_.__interfaceMonitor__ && 4 === this_.readyState)
                 try {
-                  var r = i.__interfaceMonitor__.url;
-                  if (0 === i.status) return;
+                  var r = this_.__interfaceMonitor__.url;
+                  if (0 === this_.status) return;
                   var a = r.split("?")[0],
                     o = r.split("?")[1] || "",
                     s = "string" === typeof n ? n : JSON.stringify(n),
-                    l = String(i.response);
+                    l = String(this_.response);
                   l.length > 2048 && (l = "[too large]");
                   var c = false;
-                  if (i.status < 200 || i.status > 299 || c || t.fullSample) {
+                  if (
+                    this_.status < 200 ||
+                    this_.status > 299 ||
+                    c ||
+                    t.fullSample
+                  ) {
                     if (a === e.server) return void e._warn("上报异常", s);
                     e.logRequestError({
                       type: "http",
-                      status: i.status,
+                      status: this_.status,
                       url: a,
-                      method: i.__interfaceMonitor__.method,
+                      method: this_.__interfaceMonitor__.method,
                       query: o,
                       data: s,
                       response: l,
@@ -5911,11 +5920,11 @@
                 }
             }
             if (
-              "onreadystatechange" in i &&
-              "function" === typeof i.onreadystatechange
+              "onreadystatechange" in this_ &&
+              "function" === typeof this_.onreadystatechange
             ) {
-              var o = i.onreadystatechange;
-              i.onreadystatechange = function () {
+              var o = this_.onreadystatechange;
+              this_.onreadystatechange = function () {
                 for (
                   var e = new Array(arguments.length), t = 0;
                   t < e.length;
@@ -5986,20 +5995,20 @@
         mt = dt.documentElement,
         pt = (function () {
           function e() {
-            var t = this;
+            var this_ = this;
             Se(this, e),
               (this.lastAction = "0\x02\x02".concat(Ye(), "\x02")),
               (this.setLastActionTimer = false),
               qe("scroll", document, function (e) {
-                t.setLastActionTimer ||
-                  ((t.setLastActionTimer = true),
+                this_.setLastActionTimer ||
+                  ((this_.setLastActionTimer = true),
                   setTimeout(function () {
-                    t.setLastActionTimer = false;
+                    this_.setLastActionTimer = false;
                   }, 300),
-                  t.setLastAction(e));
+                  this_.setLastAction(e));
               }),
               qe("click", document, function (e) {
-                t.setLastAction(e);
+                this_.setLastAction(e);
               });
           }
           return (
@@ -6089,7 +6098,7 @@
         _t = new Date().getTime(),
         yt = (function () {
           function e(t) {
-            var n = this;
+            var this_ = this;
             Se(this, e),
               (this.server = ft),
               (this.userConfig = {}),
@@ -6105,8 +6114,8 @@
               (this.monitorConfigFailed = false),
               (this.monitorOptions = []),
               (this.getErrorEventHandler = function (e) {
-                n.handleErrorEvent(e, function (e) {
-                  n.log(e);
+                this_.handleErrorEvent(e, function (e) {
+                  this_.log(e);
                 });
               }),
               (this._warn = function () {
@@ -6115,7 +6124,7 @@
                   "object" === Ee(e) &&
                   e.console &&
                   "function" === typeof e.console.warn &&
-                  n.debug
+                  this_.debug
                 ) {
                   for (
                     var t = arguments.length, i = new Array(t), r = 0;
@@ -6447,11 +6456,11 @@
               {
                 key: "enhance",
                 value: function (e, t) {
-                  var n = this;
+                  var this_ = this;
                   Object(ve["e"])(e, {
                     initMonitorConfigs: function (i) {
                       e.setMonitorConfigs(i),
-                        n.configStorage.saveMonitorConfig(t, i);
+                        this_.configStorage.saveMonitorConfig(t, i);
                     },
                     setMonitorConfigs: function (t) {
                       var n = t.monitors;
@@ -6475,7 +6484,7 @@
               {
                 key: "fetchRemoteConfigJson",
                 value: function (e) {
-                  var t = this;
+                  var this_ = this;
                   fetch(
                     "https://render.alipay.com/p/alertserver/".concat(
                       e,
@@ -6487,10 +6496,10 @@
                       return e.json();
                     })
                     .then(function (e) {
-                      t.monitor.initMonitorConfigs(e);
+                      this_.monitor.initMonitorConfigs(e);
                     })
                     .catch(function (e) {
-                      t.monitor.onFetchConfigError(e);
+                      this_.monitor.onFetchConfigError(e);
                     });
                 },
               },
@@ -6627,13 +6636,13 @@
         })(),
         Mt = (function () {
           function e() {
-            var t = this;
+            var this_ = this;
             Se(this, e),
               (this.injectedLog = function (e) {
                 var n;
-                return null === (n = t.monitor) || undefined === n
+                return null === (n = this_.monitor) || undefined === n
                   ? undefined
-                  : n.log.call(t.monitor, e);
+                  : n.log.call(this_.monitor, e);
               });
           }
           return (
@@ -6641,7 +6650,7 @@
               {
                 key: "apply",
                 value: function (e) {
-                  var t = this;
+                  var this_ = this;
                   (this.monitor = e),
                     $e(function () {
                       var e = window,
@@ -6662,7 +6671,7 @@
                               gt(
                                 '"Tracert.log" 已不建议使用。请迁移到 @alipay/yuyan-monitor-web。'
                               ),
-                              t.injectedLog(
+                              this_.injectedLog(
                                 Ne(Ne({}, e), {}, { bmAppid: i || r })
                               )
                             );
@@ -6754,11 +6763,11 @@
               {
                 key: "apply",
                 value: function (e) {
-                  var t = this;
+                  var this_ = this;
                   (this.monitor = e),
                     $e(function () {
                       var e, n;
-                      (null === (e = t.monitor) || undefined === e
+                      (null === (e = this_.monitor) || undefined === e
                         ? undefined
                         : null === (n = e.userConfig) || undefined === n
                         ? undefined
@@ -6766,21 +6775,21 @@
                         (window.addEventListener(
                           "message",
                           function (e) {
-                            return t.receive(e);
+                            return this_.receive(e);
                           },
                           false
                         ),
-                        (t.pending = true),
-                        (t.iframe = Ut.initIframe()),
-                        t.getUserIdForMonitor(function (e) {
+                        (this_.pending = true),
+                        (this_.iframe = Ut.initIframe()),
+                        this_.getUserIdForMonitor(function (e) {
                           var n, i, r;
                           e &&
-                            !(null === (n = t.monitor) || undefined === n
+                            !(null === (n = this_.monitor) || undefined === n
                               ? undefined
                               : null === (i = n.userConfig) || undefined === i
                               ? undefined
                               : i.userId) &&
-                            (null === (r = t.monitor) ||
+                            (null === (r = this_.monitor) ||
                               undefined === r ||
                               r.config({ userId: e }));
                         }));
@@ -7064,9 +7073,9 @@
               {
                 key: "initJsBridge",
                 value: function () {
-                  var e = this;
+                  var this_ = this;
                   document.addEventListener("AlipayJSBridgeReady", function () {
-                    e.onJsBridgeReady();
+                    this_.onJsBridgeReady();
                   });
                 },
               },
@@ -7122,10 +7131,10 @@
               {
                 key: "onMonitorConfigInited",
                 value: function () {
-                  var e = this;
+                  var this_ = this;
                   this.monitorOptions &&
                     this.monitorOptions.forEach(function (t) {
-                      t && t.code && (e.monitorOptionMap[t.code] = t);
+                      t && t.code && (this_.monitorOptionMap[t.code] = t);
                     });
                   var t = this.monitorOptionMap[Zt.REQUEST];
                   if (!this.disableInterface && t) {
@@ -7238,127 +7247,131 @@
           });
       })();
       var nn = new $t("180020010100694030"),
-        rn = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        an = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
-        on = K.a.isIos(),
-        sn = K.a.isAndroid(),
+        on = Platform.a.isIos(),
+        sn = Platform.a.isAndroid(),
         ln = window.ap,
         cn = function () {
           var e = window,
@@ -7529,9 +7542,9 @@
       }
       function wn(e) {
         var t, n, i, r, a;
-        return rn(this, undefined, undefined, function () {
+        return __awaiter(this, undefined, undefined, function () {
           var o, s;
-          return an(this, function (l) {
+          return __generator(this, function (l) {
             switch (l.label) {
               case 0:
                 return [4, _n(e)];
@@ -7640,123 +7653,127 @@
             e
           );
         },
-        Pn = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        Nn = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         On = window.Tracert,
@@ -7773,16 +7790,21 @@
                     On.expo("c64122"),
                     On.expo("c63917.d132250");
                   var e = function () {
-                    return Pn(undefined, undefined, undefined, function () {
-                      return Nn(this, function (e) {
-                        switch (e.label) {
-                          case 0:
-                            return [4, _n(2440)];
-                          case 1:
-                            return e.sent(), o(), [2];
-                        }
-                      });
-                    });
+                    return __awaiter(
+                      undefined,
+                      undefined,
+                      undefined,
+                      function () {
+                        return __generator(this, function (e) {
+                          switch (e.label) {
+                            case 0:
+                              return [4, _n(2440)];
+                            case 1:
+                              return e.sent(), o(), [2];
+                          }
+                        });
+                      }
+                    );
                   };
                   e();
                 }
@@ -7795,28 +7817,28 @@
                 in: n,
                 timeout: 560,
                 classNames: {
-                  appear: H.a.appear,
-                  appearActive: H.a.activeAppear,
-                  appearDone: H.a.doneAppear,
-                  enter: H.a.enter,
-                  enterActive: H.a.activeEnter,
-                  enterDone: H.a.doneEnter,
-                  exit: H.a.exit,
-                  exitActive: H.a.activeExit,
-                  exitDone: H.a.doneExit,
+                  appear: className$1.a.appear,
+                  appearActive: className$1.a.activeAppear,
+                  appearDone: className$1.a.doneAppear,
+                  enter: className$1.a.enter,
+                  enterActive: className$1.a.activeEnter,
+                  enterDone: className$1.a.doneEnter,
+                  exit: className$1.a.exit,
+                  exitActive: className$1.a.activeExit,
+                  exitDone: className$1.a.doneExit,
                 },
                 unmountOnExit: true,
               },
               React_.a.createElement(
                 "div",
-                { className: H.a.guide },
+                { className: className$1.a.guide },
                 React_.a.createElement("div", {
-                  className: p()(
-                    H.a.title,
-                    ((t = {}), (t[H.a.prePeriod] = a), t)
+                  className: extractClassNameFromArgs()(
+                    className$1.a.title,
+                    ((t = {}), (t[className$1.a.prePeriod] = a), t)
                   ),
                 }),
-                React_.a.createElement("div", { className: H.a.img })
+                React_.a.createElement("div", { className: className$1.a.img })
               )
             )
           );
@@ -7834,7 +7856,10 @@
           return React_.a.createElement(
             "div",
             {
-              className: p()(zn.a.font, ((t = {}), (t[zn.a.active] = i), t)),
+              className: extractClassNameFromArgs()(
+                zn.a.font,
+                ((t = {}), (t[zn.a.active] = i), t)
+              ),
               onClick: s,
               "data-aspm-click": "c63924.d131818_" + n,
               "data-aspm-param": "name=" + o,
@@ -7871,7 +7896,7 @@
             React_.a.createElement(
               "div",
               {
-                className: p()(
+                className: extractClassNameFromArgs()(
                   zn.a.fontList,
                   ((t = {}), (t[zn.a.degradeStatic] = i === oe.Static), t)
                 ),
@@ -7899,9 +7924,9 @@
         Fn = jn,
         Un = __webpack_require__("WXTu"),
         Ln = __webpack_require__.n(Un);
-      function Gn() {
+      function __assign() {
         return (
-          (Gn =
+          (__assign =
             Object.assign ||
             function (e) {
               for (var t = 1; t < arguments.length; t++) {
@@ -7911,7 +7936,7 @@
               }
               return e;
             }),
-          Gn.apply(this, arguments)
+          __assign.apply(this, arguments)
         );
       }
       var Qn = React_.a.createElement("title", null, "画板备份 33"),
@@ -7935,7 +7960,7 @@
         Wn = function (e) {
           return React_.a.createElement(
             "svg",
-            Gn(
+            __assign(
               {
                 width: "30px",
                 height: "30px",
@@ -7949,9 +7974,9 @@
             Hn
           );
         };
-      function Zn() {
+      function __assign() {
         return (
-          (Zn =
+          (__assign =
             Object.assign ||
             function (e) {
               for (var t = 1; t < arguments.length; t++) {
@@ -7961,7 +7986,7 @@
               }
               return e;
             }),
-          Zn.apply(this, arguments)
+          __assign.apply(this, arguments)
         );
       }
       var Yn = React_.a.createElement("title", null, "Shape"),
@@ -8021,7 +8046,7 @@
         Xn = function (e) {
           return React_.a.createElement(
             "svg",
-            Zn(
+            __assign(
               {
                 width: "37px",
                 height: "35px",
@@ -8148,7 +8173,7 @@
                     React_.a.createElement(
                       "button",
                       {
-                        className: p()(
+                        className: extractClassNameFromArgs()(
                           Ln.a.undoBtn,
                           ((t = {}), (t[Ln.a.disabled] = A), t)
                         ),
@@ -8168,7 +8193,7 @@
                     React_.a.createElement(
                       "button",
                       {
-                        className: p()(
+                        className: extractClassNameFromArgs()(
                           Ln.a.clearBtn,
                           ((n = {}), (n[Ln.a.disabled] = A), n)
                         ),
@@ -8187,7 +8212,7 @@
               React_.a.createElement(
                 "div",
                 {
-                  className: p()(
+                  className: extractClassNameFromArgs()(
                     Ln.a.btn,
                     ((a = {}), (a[Ln.a.disabled] = !u), a)
                   ),
@@ -8203,123 +8228,127 @@
         $n = Kn,
         ei = __webpack_require__("AgXl"),
         ti = __webpack_require__.n(ei),
-        ni = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        ii = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         ri = function () {},
@@ -8340,8 +8369,8 @@
             g = f[1],
             b = Object(React["useRef"])(null),
             v = function () {
-              return ni(undefined, undefined, undefined, function () {
-                return ii(this, function (e) {
+              return __awaiter(undefined, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   switch (e.label) {
                     case 0:
                       return g(true), [4, u()];
@@ -8359,7 +8388,7 @@
               "div",
               { className: ti.a.decorate },
               React_.a.createElement("div", {
-                className: p()(
+                className: extractClassNameFromArgs()(
                   ((t = {}), (t[ti.a.bg] = true), (t[ti.a.prePeriod] = a), t)
                 ),
               }),
@@ -8383,7 +8412,7 @@
                             "data-aspm-click": "c63924.d131824",
                             "data-aspm-param": "name=" + n,
                             "data-aspm-expo": true,
-                            className: p()(
+                            className: extractClassNameFromArgs()(
                               ((t = {}),
                               (t[ti.a.active] = n === o),
                               (t[ti.a.tabItem] = true),
@@ -8529,7 +8558,7 @@
                             React_.a.createElement(
                               "div",
                               {
-                                className: p()(
+                                className: extractClassNameFromArgs()(
                                   di.a.btn1,
                                   ((t = {}), (t[di.a.disabled] = d), t)
                                 ),
@@ -8540,7 +8569,7 @@
                             React_.a.createElement(
                               "div",
                               {
-                                className: p()(
+                                className: extractClassNameFromArgs()(
                                   di.a.btn2,
                                   ((n = {}), (n[di.a.disabled] = m), n)
                                 ),
@@ -8555,7 +8584,7 @@
                             React_.a.createElement(
                               "div",
                               {
-                                className: p()(
+                                className: extractClassNameFromArgs()(
                                   di.a.singleBtn,
                                   ((a = {}), (a[di.a.disabled] = d), a)
                                 ),
@@ -8595,9 +8624,9 @@
           );
         },
         vi = bi;
-      function Ai() {
+      function __assign() {
         return (
-          (Ai =
+          (__assign =
             Object.assign ||
             function (e) {
               for (var t = 1; t < arguments.length; t++) {
@@ -8607,7 +8636,7 @@
               }
               return e;
             }),
-          Ai.apply(this, arguments)
+          __assign.apply(this, arguments)
         );
       }
       var _i = React_.a.createElement("title", null, "画板备份 19"),
@@ -8630,7 +8659,7 @@
         wi = function (e) {
           return React_.a.createElement(
             "svg",
-            Ai(
+            __assign(
               {
                 width: "30px",
                 height: "30px",
@@ -8644,9 +8673,9 @@
             yi
           );
         };
-      function ki() {
+      function __assign() {
         return (
-          (ki =
+          (__assign =
             Object.assign ||
             function (e) {
               for (var t = 1; t < arguments.length; t++) {
@@ -8656,7 +8685,7 @@
               }
               return e;
             }),
-          ki.apply(this, arguments)
+          __assign.apply(this, arguments)
         );
       }
       var xi = React_.a.createElement("title", null, "画板备份 20"),
@@ -8707,7 +8736,7 @@
         Si = function (e) {
           return React_.a.createElement(
             "svg",
-            ki(
+            __assign(
               {
                 width: "30px",
                 height: "30px",
@@ -8721,9 +8750,9 @@
             Ei
           );
         };
-      function Ti() {
+      function __assign() {
         return (
-          (Ti =
+          (__assign =
             Object.assign ||
             function (e) {
               for (var t = 1; t < arguments.length; t++) {
@@ -8733,7 +8762,7 @@
               }
               return e;
             }),
-          Ti.apply(this, arguments)
+          __assign.apply(this, arguments)
         );
       }
       var Ci = React_.a.createElement("title", null, "画板备份 29"),
@@ -8761,7 +8790,7 @@
         Pi = function (e) {
           return React_.a.createElement(
             "svg",
-            Ti(
+            __assign(
               {
                 width: "30px",
                 height: "30px",
@@ -8806,123 +8835,127 @@
           );
         },
         Bi = Ri,
-        Di = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        zi = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         AlipayJSAPI = window.ap,
@@ -8975,8 +9008,8 @@
               y ? P() : D(true);
             },
             H = function () {
-              return Di(undefined, undefined, undefined, function () {
-                return zi(this, function (e) {
+              return __awaiter(undefined, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   switch (e.label) {
                     case 0:
                       return j(true), [4, I()];
@@ -8987,8 +9020,8 @@
               });
             },
             W = function () {
-              return Di(undefined, undefined, undefined, function () {
-                return zi(this, function (e) {
+              return __awaiter(undefined, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   return (
                     b
                       ? AlipayJSAPI.call(
@@ -9023,19 +9056,19 @@
             {
               "data-aspm": "c63925",
               "data-aspm-expo": true,
-              className: p()(
+              className: extractClassNameFromArgs()(
                 ((t = {}), (t[ci.a.replaying] = w), (t[ci.a.save] = true), t)
               ),
             },
             React_.a.createElement("div", {
-              className: p()(
+              className: extractClassNameFromArgs()(
                 ((n = {}), (n[ci.a.bg] = true), (n[ci.a.prePeriod] = f), n)
               ),
             }),
             React_.a.createElement(
               "div",
               {
-                className: p()(
+                className: extractClassNameFromArgs()(
                   ci.a.btnGroup,
                   ((a = {}), (a[ci.a.disabled] = w), a)
                 ),
@@ -9065,7 +9098,7 @@
                   React_.a.createElement(
                     "button",
                     {
-                      className: p()(
+                      className: extractClassNameFromArgs()(
                         ci.a.btn,
                         ((o = {}), (o[ci.a.disabled] = w || v), o)
                       ),
@@ -9088,7 +9121,7 @@
                   React_.a.createElement(
                     "button",
                     {
-                      className: p()(
+                      className: extractClassNameFromArgs()(
                         ci.a.btn,
                         ((s = {}), (s[ci.a.disabled] = w || g), s)
                       ),
@@ -9114,7 +9147,7 @@
                     React_.a.createElement(
                       "div",
                       {
-                        className: p()(
+                        className: extractClassNameFromArgs()(
                           ci.a.printBtn,
                           ((l = {}), (l[ci.a.disabled] = !y), l)
                         ),
@@ -9125,7 +9158,7 @@
                       "免费打印福字"
                     ),
                     React_.a.createElement("div", {
-                      className: p()(
+                      className: extractClassNameFromArgs()(
                         ci.a.printTip,
                         ((c = {}), (c[ci.a.disabled] = !y), c)
                       ),
@@ -9134,7 +9167,7 @@
                   React_.a.createElement(
                     "div",
                     {
-                      className: p()(
+                      className: extractClassNameFromArgs()(
                         ci.a.saveBtn,
                         ((u = {}), (u[ci.a.disabled] = w || g), u)
                       ),
@@ -9151,7 +9184,7 @@
                   React_.a.createElement(
                     "div",
                     {
-                      className: p()(
+                      className: extractClassNameFromArgs()(
                         ci.a.fucardBtn,
                         ((d = {}), (d[ci.a.disabled] = w || _ || M), d)
                       ),
@@ -9173,16 +9206,21 @@
                       return L(false);
                     },
                     onOK: function () {
-                      return Di(undefined, undefined, undefined, function () {
-                        return zi(this, function (e) {
-                          switch (e.label) {
-                            case 0:
-                              return [4, W()];
-                            case 1:
-                              return e.sent(), L(false), [2];
-                          }
-                        });
-                      });
+                      return __awaiter(
+                        undefined,
+                        undefined,
+                        undefined,
+                        function () {
+                          return __generator(this, function (e) {
+                            switch (e.label) {
+                              case 0:
+                                return [4, W()];
+                              case 1:
+                                return e.sent(), L(false), [2];
+                            }
+                          });
+                        }
+                      );
                     },
                   })
                 ),
@@ -9251,7 +9289,7 @@
                 {
                   "data-aspm-click": "d131833",
                   "data-aspm-expo": true,
-                  className: p()(
+                  className: extractClassNameFromArgs()(
                     ci.a.shareBtn,
                     ((m = {}), (m[ci.a.disabled] = w || A), m)
                   ),
@@ -9763,154 +9801,155 @@
           [e]
         );
       }
-      var Nr = function (e, t, PromisePolyfill, i) {
-          function r(e) {
-            return e instanceof PromisePolyfill
-              ? e
-              : new PromisePolyfill(function (t) {
-                  t(e);
+      var __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (PromisePolyfill || (PromisePolyfill = Promise))(function (
-            res,
-            rej
-          ) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                rej(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                rej(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? res(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        Or = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         };
       function getSetCardsShareDetail() {
         return createStorage("cardsShareDetail");
       }
-      function Br(e) {
+      function Br(props) {
         var _this = this,
           startUpParams = getStartUpParams(),
-          r = getUserInfo(),
+          userInfo = getUserInfo(),
           a = getSetCardsShareDetail(),
-          o = a[1],
-          s = e.closeTfsImage,
-          l = e.homeInitResult,
-          c = e.jumpToSharePage,
-          u = e.showOutModal,
-          d = e.handleError;
+          cardsShareDetail = a[1],
+          closeTfsImage = props.closeTfsImage,
+          homeInitResult = props.homeInitResult,
+          jumpToSharePage = props.jumpToSharePage,
+          showOutModal = props.showOutModal,
+          handleError = props.handleError;
         Object(React["useEffect"])(
           function () {
             var e;
-            r &&
+            userInfo &&
               startUpParams &&
-              (null === (e = l) || undefined === e
+              (null === (e = homeInitResult) || undefined === e
                 ? undefined
                 : e.enableShare) &&
               (function () {
-                Nr(_this, undefined, undefined, function () {
+                __awaiter(_this, undefined, undefined, function () {
                   var params, userId, imageId, a, l, m, p, f;
-                  return Or(this, function (h) {
+                  return __generator(this, function (h) {
                     switch (h.label) {
                       case 0:
                         (params = startUpParams || {}),
@@ -9926,14 +9965,14 @@
                                 lr({
                                   userId: userId,
                                   imageId: imageId,
-                                  closeTfsImage: s,
+                                  closeTfsImage: closeTfsImage,
                                 }),
                               ]
                             : [3, 3]
                         );
                       case 2:
                         (a = h.sent()),
-                          o(a),
+                          cardsShareDetail(a),
                           5 !==
                             (null ===
                               (p =
@@ -9943,18 +9982,18 @@
                               ? undefined
                               : p.length) ||
                             a.handFuShareVOList.find(function (e) {
-                              return e.userId === r.userId;
+                              return e.userId === userInfo.userId;
                             }) ||
-                            r.userId === userId ||
-                            u(),
-                          c(),
+                            userInfo.userId === userId ||
+                            showOutModal(),
+                          jumpToSharePage(),
                           (h.label = 3);
                       case 3:
                         return [3, 5];
                       case 4:
                         return (
                           (l = h.sent()),
-                          d(
+                          handleError(
                             null === (f = l) || undefined === f
                               ? undefined
                               : f.code
@@ -9968,7 +10007,7 @@
                 });
               })();
           },
-          [startUpParams, r, l]
+          [startUpParams, userInfo, homeInitResult]
         );
       }
       function remoteLog(e, t) {
@@ -10078,7 +10117,7 @@
           function e(e, t) {
             var n,
               i,
-              r = this;
+              this_ = this;
             (this.loaded = false), (this.app = t), (this.config = e);
             var a = !!(null ===
               (i =
@@ -10091,9 +10130,9 @@
             else {
               var o = Tiny.Texture.fromImage(e.url),
                 s = function () {
-                  if (o.valid && !r.loaded) {
+                  if (o.valid && !this_.loaded) {
                     var e = new Tiny.Sprite(o);
-                    r.initSprite(e, a);
+                    this_.initSprite(e, a);
                   }
                 };
               o.on("update", s), s();
@@ -10185,123 +10224,127 @@
         Zr = (__webpack_require__("8K25"), __webpack_require__("2gqI")),
         Yr = __webpack_require__.n(Zr),
         Jr = __webpack_require__("3Koh"),
-        Xr = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        Vr = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         qr = (function () {
@@ -10320,9 +10363,9 @@
               return this.tablet;
             }),
             (e.prototype.createImageSprite = function () {
-              return Xr(this, undefined, Promise, function () {
+              return __awaiter(this, undefined, Promise, function () {
                 var e, t;
-                return Vr(this, function (n) {
+                return __generator(this, function (n) {
                   return (
                     (e = this.tablet.getContentBounds()),
                     (t = new Image()),
@@ -10537,9 +10580,9 @@
             e
           );
         })(),
-        aa = function () {
+        __assign = function () {
           return (
-            (aa =
+            (__assign =
               Object.assign ||
               function (e) {
                 for (var t, n = 1, i = arguments.length; n < i; n++)
@@ -10547,126 +10590,130 @@
                     Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
                 return e;
               }),
-            aa.apply(this, arguments)
+            __assign.apply(this, arguments)
           );
         },
-        oa = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        sa = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         AlipayJSAPI = window.ap;
@@ -10732,13 +10779,13 @@
             }),
             (e.prototype.init = function () {
               var e, t;
-              return oa(this, undefined, undefined, function () {
+              return __awaiter(this, undefined, undefined, function () {
                 var n,
                   i,
                   r,
                   a,
-                  o = this;
-                return sa(this, function (s) {
+                  this_ = this;
+                return __generator(this, function (s) {
                   switch (s.label) {
                     case 0:
                       return (
@@ -10773,7 +10820,7 @@
                         })),
                         [
                           4,
-                          new Promise(function (e) {
+                          new Promise(function (res) {
                             Tiny.Loader.add([
                               {
                                 name: "stamp",
@@ -10818,58 +10865,66 @@
                                 loadType: Tiny.loaders.Resource.LOAD_TYPE.IMAGE,
                               },
                             ]).load(function () {
-                              e(o);
+                              res(this_);
                               var t =
                                   Tiny.TextureCache[
-                                    o.options.prePeriod
+                                    this_.options.prePeriod
                                       ? "decorate-pre-bg"
                                       : "decorate-bg"
                                   ],
                                 n = new Tiny.Sprite(t);
                               (n.width = Tiny.WIN_SIZE.width),
                                 (n.height = Tiny.WIN_SIZE.height),
-                                (o.bgContainer = new Tiny.Container()),
-                                o.bgContainer.addChild(n),
-                                (o.bgContainer.visible = false);
+                                (this_.bgContainer = new Tiny.Container()),
+                                this_.bgContainer.addChild(n),
+                                (this_.bgContainer.visible = false);
                               var i = Tiny.TextureCache["save-bg"],
                                 r = new Tiny.Sprite(i);
                               if (
                                 ((r.width = Tiny.WIN_SIZE.width),
                                 (r.height = Tiny.WIN_SIZE.height),
-                                (o.saveContainer = new Tiny.Container()),
-                                o.saveContainer.addChild(r),
-                                (o.saveContainer.visible = false),
-                                o.container.addChild(o.saveContainer),
-                                o.container.addChild(o.bgContainer),
-                                o.container.addChild(o.mainContainer),
-                                o.container.addChild(o.replayContainer),
-                                o.mainContainer.addChild(o.tabletContainer),
-                                o.mainContainer.addChild(o.stickerContainer),
-                                o.options.prePeriod)
+                                (this_.saveContainer = new Tiny.Container()),
+                                this_.saveContainer.addChild(r),
+                                (this_.saveContainer.visible = false),
+                                this_.container.addChild(this_.saveContainer),
+                                this_.container.addChild(this_.bgContainer),
+                                this_.container.addChild(this_.mainContainer),
+                                this_.container.addChild(this_.replayContainer),
+                                this_.mainContainer.addChild(
+                                  this_.tabletContainer
+                                ),
+                                this_.mainContainer.addChild(
+                                  this_.stickerContainer
+                                ),
+                                this_.options.prePeriod)
                               ) {
-                                (o.preTopContainer = new Tiny.Container()),
-                                  o.container.addChild(o.preTopContainer);
+                                (this_.preTopContainer = new Tiny.Container()),
+                                  this_.container.addChild(
+                                    this_.preTopContainer
+                                  );
                                 var a =
                                     Tiny.TextureCache["decorate-pre-top-bg"],
                                   s = new Tiny.Sprite(a);
                                 (s.width = Tiny.WIN_SIZE.width),
                                   (s.height = Tiny.WIN_SIZE.height),
-                                  o.preTopContainer.addChild(s),
-                                  (o.preTopContainer.visible = false);
+                                  this_.preTopContainer.addChild(s),
+                                  (this_.preTopContainer.visible = false);
                               }
                               if (
-                                (o.mainContainer.addChild(o.stampContainer),
-                                (o.stickerContainer.hitArea = new Tiny.Rectangle(
+                                (this_.mainContainer.addChild(
+                                  this_.stampContainer
+                                ),
+                                (this_.stickerContainer.hitArea = new Tiny.Rectangle(
                                   0,
                                   0,
                                   Tiny.WIN_SIZE.width,
                                   Tiny.WIN_SIZE.height
                                 )),
-                                o.stickerContainer.on(
+                                this_.stickerContainer.on(
                                   "pointerdown",
                                   Gr.a.deactivateAll
                                 ),
-                                o.options.prePeriod)
+                                this_.options.prePeriod)
                               ) {
                                 var l = Tiny.WIN_SIZE.width,
                                   c = new Tiny.Graphics();
@@ -10886,58 +10941,64 @@
                                     l / 2,
                                   ]),
                                   c.endFill(),
-                                  (o.prePeriodMask = c);
+                                  (this_.prePeriodMask = c);
                               } else {
                                 l = Tiny.WIN_SIZE.width;
                                 var u = 2;
-                                (o.borderGraphics = new Tiny.Graphics()),
-                                  o.borderGraphics.lineStyle(u, 16702904, 1),
-                                  o.borderGraphics.drawRoundedRect(
+                                (this_.borderGraphics = new Tiny.Graphics()),
+                                  this_.borderGraphics.lineStyle(
+                                    u,
+                                    16702904,
+                                    1
+                                  ),
+                                  this_.borderGraphics.drawRoundedRect(
                                     0 + u / 2,
                                     0 + u / 2,
                                     l - u,
                                     l - u,
                                     30
                                   ),
-                                  (o.borderGraphics.visible = false),
-                                  o.container.addChild(o.borderGraphics);
+                                  (this_.borderGraphics.visible = false),
+                                  this_.container.addChild(
+                                    this_.borderGraphics
+                                  );
                                 c = new Tiny.Graphics();
                                 c.lineStyle(0),
                                   c.beginFill(16777215),
                                   c.drawRoundedRect(0, 0, l, l, 30),
                                   c.endFill(),
-                                  (o.mainMask = c);
+                                  (this_.mainMask = c);
                               }
-                              (o.tablet = new qr(o.app.renderer)),
-                                o.options.degradeLevel === oe.None &&
-                                  (o.tabletContainer.addChild(
-                                    o.tablet.getContainer()
+                              (this_.tablet = new qr(this_.app.renderer)),
+                                this_.options.degradeLevel === oe.None &&
+                                  (this_.tabletContainer.addChild(
+                                    this_.tablet.getContainer()
                                   ),
-                                  o.tablet
+                                  this_.tablet
                                     .getTablet()
                                     .on("stroke-begin", function () {
                                       var e;
-                                      o.tabletChangedCallback &&
-                                        o.tabletChangedCallback(
+                                      this_.tabletChangedCallback &&
+                                        this_.tabletChangedCallback(
                                           true,
-                                          null === (e = o.tablet) ||
+                                          null === (e = this_.tablet) ||
                                             undefined === e
                                             ? undefined
                                             : e.getStrokeNum()
                                         );
                                     }),
-                                  o.tablet.hide()),
-                                (o.stamp = new ra(
-                                  o.options.prePeriod,
-                                  o.stampContainer,
-                                  o.container,
+                                  this_.tablet.hide()),
+                                (this_.stamp = new ra(
+                                  this_.options.prePeriod,
+                                  this_.stampContainer,
+                                  this_.container,
                                   function () {
-                                    o.stampClickCallback &&
-                                      o.stampClickCallback();
+                                    this_.stampClickCallback &&
+                                      this_.stampClickCallback();
                                   }
                                 )),
-                                o.stamp.hide(),
-                                o.app.run(o.container);
+                                this_.stamp.hide(),
+                                this_.app.run(this_.container);
                             });
                           }),
                         ]
@@ -11076,8 +11137,8 @@
             }),
             (e.prototype.changeFont = function (e) {
               var t;
-              return oa(this, undefined, undefined, function () {
-                return sa(this, function (n) {
+              return __awaiter(this, undefined, undefined, function () {
+                return __generator(this, function (n) {
                   return (
                     (this.activeFont = e),
                     this.options.degradeLevel === oe.None &&
@@ -11091,9 +11152,9 @@
             }),
             (e.prototype.createDegradeBlessingSprite = function (e) {
               var t;
-              return oa(this, undefined, undefined, function () {
+              return __awaiter(this, undefined, undefined, function () {
                 var n;
-                return sa(this, function (i) {
+                return __generator(this, function (i) {
                   switch (i.label) {
                     case 0:
                       return (
@@ -11114,7 +11175,7 @@
             }),
             (e.prototype.checkFuImage = function () {
               var e, t, n, i;
-              return oa(this, undefined, Promise, function () {
+              return __awaiter(this, undefined, Promise, function () {
                 var r,
                   a,
                   o,
@@ -11140,7 +11201,7 @@
                   S,
                   T,
                   C;
-                return sa(this, function (I) {
+                return __generator(this, function (I) {
                   switch (I.label) {
                     case 0:
                       return this.options.degradeLevel === oe.Static &&
@@ -11224,9 +11285,9 @@
                               {
                                 success: false,
                                 imageURI: k,
-                                errorMessage: X.TinyFu,
+                                errorMessage: fuDetectErrorHints.TinyFu,
                                 pureImageURI: v,
-                                errorCode: V.TinyFu,
+                                errorCode: fuDetectErrorCodes.TinyFu,
                               },
                             ]
                           : [4, this.checkFu(k, this.options.modelCloudKeyFu)]
@@ -11255,9 +11316,9 @@
               });
             }),
             (e.prototype.checkFinalImage = function (e) {
-              return oa(this, undefined, undefined, function () {
+              return __awaiter(this, undefined, undefined, function () {
                 var t, n, i, r, a;
-                return sa(this, function (o) {
+                return __generator(this, function (o) {
                   switch (o.label) {
                     case 0:
                       return [
@@ -11311,9 +11372,9 @@
             }),
             (e.prototype.hideTablet = function () {
               var e, t;
-              return oa(this, undefined, undefined, function () {
+              return __awaiter(this, undefined, undefined, function () {
                 var n, i;
-                return sa(this, function (r) {
+                return __generator(this, function (r) {
                   return (
                     (n = this.getTablet()),
                     n && (n.lock(), n.hide()),
@@ -11378,9 +11439,9 @@
             }),
             (e.prototype.replay = function () {
               var e, t, n, i, r;
-              return oa(this, undefined, undefined, function () {
+              return __awaiter(this, undefined, undefined, function () {
                 var a;
-                return sa(this, function (o) {
+                return __generator(this, function (o) {
                   switch (o.label) {
                     case 0:
                       return (
@@ -11453,9 +11514,9 @@
             }),
             (e.prototype.saveTableFile = function () {
               var e, t;
-              return oa(this, undefined, Promise, function () {
+              return __awaiter(this, undefined, Promise, function () {
                 var n, i, r, a, o;
-                return sa(this, function (s) {
+                return __generator(this, function (s) {
                   switch (s.label) {
                     case 0:
                       return (
@@ -11530,7 +11591,7 @@
                 i,
                 r,
                 a,
-                o = this;
+                this_ = this;
               if (e)
                 return (this.renderingData = e), void (this.plainHistory = t);
               var s = this.stickerContainer.children.filter(function (e) {
@@ -11546,7 +11607,7 @@
                 (this.plainHistory = undefined);
               var l = s
                   .map(function (e) {
-                    return o.stickers.find(function (t) {
+                    return this_.stickers.find(function (t) {
                       return t.getConfig().uniqId === e.uniqId;
                     });
                   })
@@ -11639,9 +11700,9 @@
               null === (e = this.stamp) || undefined === e || e.destroy();
             }),
             (e.prototype.setLastImg = function (e) {
-              return oa(this, undefined, undefined, function () {
+              return __awaiter(this, undefined, undefined, function () {
                 var t;
-                return sa(this, function (n) {
+                return __generator(this, function (n) {
                   switch (n.label) {
                     case 0:
                       return (
@@ -11684,9 +11745,9 @@
               return (
                 undefined === t && (t = ie.Fu),
                 undefined === n && (n = 4),
-                oa(this, undefined, Promise, function () {
+                __awaiter(this, undefined, Promise, function () {
                   var i;
-                  return sa(this, function (r) {
+                  return __generator(this, function (r) {
                     switch (r.label) {
                       case 0:
                         return (
@@ -11718,13 +11779,13 @@
               );
             }),
             (e.prototype.checkFu = function (e, t) {
-              return oa(this, undefined, Promise, function () {
+              return __awaiter(this, undefined, Promise, function () {
                 var n, i, r, a, o, s, l, c, u, d, m, p, f, h, g, b;
-                return sa(this, function (v) {
+                return __generator(this, function (v) {
                   switch (v.label) {
                     case 0:
                       return this.options.forceServerReg
-                        ? ((i = J.UNKNOWN), (n = {}), [3, 8])
+                        ? ((i = fuErrorCodes.UNKNOWN), (n = {}), [3, 8])
                         : [3, 1];
                     case 1:
                       return (
@@ -11779,7 +11840,7 @@
                         [3, 8]
                       );
                     case 4:
-                      return v.sent(), (i = J.UNKNOWN), [3, 8];
+                      return v.sent(), (i = fuErrorCodes.UNKNOWN), [3, 8];
                     case 5:
                       return a
                         ? [
@@ -11798,9 +11859,9 @@
                         return [
                           2,
                           {
-                            success: i === J.FU || i === J.UNKNOWN,
-                            errorMessage: o || X.NotFu,
-                            errorCode: r || V.NotFu,
+                            success: i === fuErrorCodes.FU || i === fuErrorCodes.UNKNOWN,
+                            errorMessage: o || fuDetectErrorHints.NotFu,
+                            errorCode: r || fuDetectErrorCodes.NotFu,
                             originalResult: n,
                             localJudgeResult: Number(i),
                           },
@@ -11809,7 +11870,7 @@
                     case 9:
                       return (
                         v.trys.push([9, 16, , 17]),
-                        i !== J.UNKNOWN ? [3, 14] : [4, this.uploadFuImage(e)]
+                        i !== fuErrorCodes.UNKNOWN ? [3, 14] : [4, this.uploadFuImage(e)]
                       );
                     case 10:
                       return (
@@ -11831,8 +11892,8 @@
                             [
                               2,
                               {
-                                success: f === J.FU,
-                                errorMessage: g || X.NotFu,
+                                success: f === fuErrorCodes.FU,
+                                errorMessage: g || fuDetectErrorHints.NotFu,
                                 errorCode: h,
                                 originalResult: n,
                                 localJudgeResult: Number(i),
@@ -11845,13 +11906,13 @@
                     case 13:
                       return [3, 15];
                     case 14:
-                      if (i === J.NOTFU)
+                      if (i === fuErrorCodes.NOTFU)
                         return [
                           2,
                           {
                             success: false,
-                            errorMessage: o || X.NotFu,
-                            errorCode: r || V.NotFu,
+                            errorMessage: o || fuDetectErrorHints.NotFu,
+                            errorCode: r || fuDetectErrorCodes.NotFu,
                             originalResult: n,
                             localJudgeResult: Number(i),
                           },
@@ -11866,8 +11927,8 @@
                           2,
                           {
                             success: false,
-                            errorMessage: b.desc || X.NotFu,
-                            errorCode: V.NotFu,
+                            errorMessage: b.desc || fuDetectErrorHints.NotFu,
+                            errorCode: fuDetectErrorCodes.NotFu,
                             originalResult: n,
                             localJudgeResult: Number(i),
                           },
@@ -11879,7 +11940,7 @@
                         {
                           success: true,
                           errorMessage: "",
-                          errorCode: V.Fu,
+                          errorCode: fuDetectErrorCodes.Fu,
                           originalResult: n,
                           localJudgeResult: Number(i),
                         },
@@ -11895,7 +11956,7 @@
             }),
             (e.prototype.replayTablet = function () {
               var e, t, n, i;
-              return oa(this, undefined, undefined, function () {
+              return __awaiter(this, undefined, undefined, function () {
                 var r,
                   a,
                   o,
@@ -11911,8 +11972,8 @@
                   g,
                   b,
                   v,
-                  A = this;
-                return sa(this, function (_) {
+                  this_ = this;
+                return __generator(this, function (_) {
                   return (
                     null === (e = this.renderingData) || undefined === e
                       ? undefined
@@ -11948,22 +12009,27 @@
                         new Promise(function (e) {
                           var t, n, i, r, d;
                           if (u)
-                            if (A.blessingSprite) {
-                              A.blessingSprite.setAnchor(0.5),
-                                A.blessingSprite.setScale(c.x * m, c.y * p),
-                                A.blessingSprite.setPosition(a.x * m, a.y * p),
-                                A.replayContainer.addChild(A.blessingSprite);
+                            if (this_.blessingSprite) {
+                              this_.blessingSprite.setAnchor(0.5),
+                                this_.blessingSprite.setScale(c.x * m, c.y * p),
+                                this_.blessingSprite.setPosition(
+                                  a.x * m,
+                                  a.y * p
+                                ),
+                                this_.replayContainer.addChild(
+                                  this_.blessingSprite
+                                );
                               var f = Tiny.FadeIn(300);
-                              A.blessingSprite.setOpacity(0),
+                              this_.blessingSprite.setOpacity(0),
                                 f.setDelay(300),
                                 (f.onComplete = function () {
                                   e(undefined);
                                 }),
-                                A.blessingSprite.runAction(f);
+                                this_.blessingSprite.runAction(f);
                             } else e(undefined);
                           else {
                             var _ =
-                                null === (t = A.tablet) || undefined === t
+                                null === (t = this_.tablet) || undefined === t
                                   ? undefined
                                   : t.getPlayer(v),
                               y = a.x - s.x * h * c.x - o.width / 2,
@@ -11971,7 +12037,7 @@
                               k =
                                 ((null ===
                                   (i =
-                                    null === (n = A.app) || undefined === n
+                                    null === (n = this_.app) || undefined === n
                                       ? undefined
                                       : n.renderer) || undefined === i
                                   ? undefined
@@ -11979,7 +12045,7 @@
                               x =
                                 ((null ===
                                   (d =
-                                    null === (r = A.app) || undefined === r
+                                    null === (r = this_.app) || undefined === r
                                       ? undefined
                                       : r.renderer) || undefined === d
                                   ? undefined
@@ -11999,7 +12065,7 @@
                               E.addChild(S),
                               E.addChild(_),
                               (E.mask = S),
-                              A.replayContainer.addChild(E),
+                              this_.replayContainer.addChild(E),
                               _.setPosition(y * k, w * x),
                               _.setScale(c.x * k, c.y * x),
                               _.on("end", function () {
@@ -12007,7 +12073,7 @@
                                   E.setPivot((g * k) / 2, (b * x) / 2),
                                     E.setPosition((g * k) / 2, (b * x) / 2);
                                   var t = Tiny.RotateTo(
-                                    A.options.replayFuRotateTime,
+                                    this_.options.replayFuRotateTime,
                                     { rotation: Math.PI }
                                   );
                                   t.setInterpolation(
@@ -12029,13 +12095,13 @@
             }),
             (e.prototype.replayStickers = function () {
               var e, t;
-              return oa(this, undefined, undefined, function () {
+              return __awaiter(this, undefined, undefined, function () {
                 var n,
                   i,
                   r,
                   a,
-                  o = this;
-                return sa(this, function (s) {
+                  this_ = this;
+                return __generator(this, function (s) {
                   switch (s.label) {
                     case 0:
                       return (
@@ -12056,58 +12122,64 @@
                                   undefined === t
                                   ? undefined
                                   : t.map(function (e) {
-                                      return oa(
-                                        o,
+                                      return __awaiter(
+                                        this_,
                                         undefined,
                                         undefined,
                                         function () {
                                           var t, n, i;
-                                          return sa(this, function (r) {
-                                            switch (r.label) {
-                                              case 0:
-                                                if (
-                                                  ((t = this.findStickerById(
-                                                    e.id
-                                                  )),
-                                                  (n =
-                                                    (t && t.url) ||
-                                                    baseUrl + "/" + e.imgId),
-                                                  !n)
-                                                )
+                                          return __generator(
+                                            this,
+                                            function (r) {
+                                              switch (r.label) {
+                                                case 0:
+                                                  if (
+                                                    ((t = this.findStickerById(
+                                                      e.id
+                                                    )),
+                                                    (n =
+                                                      (t && t.url) ||
+                                                      baseUrl + "/" + e.imgId),
+                                                    !n)
+                                                  )
+                                                    return (
+                                                      nn.error(
+                                                        "sticker missing",
+                                                        [e.id]
+                                                      ),
+                                                      [2]
+                                                    );
+                                                  r.label = 1;
+                                                case 1:
                                                   return (
-                                                    nn.error(
-                                                      "sticker missing",
-                                                      [e.id]
-                                                    ),
-                                                    [2]
+                                                    r.trys.push([1, 3, , 4]),
+                                                    [
+                                                      4,
+                                                      this.generateSpriteFromURI(
+                                                        n
+                                                      ),
+                                                    ]
                                                   );
-                                                r.label = 1;
-                                              case 1:
-                                                return (
-                                                  r.trys.push([1, 3, , 4]),
-                                                  [
-                                                    4,
-                                                    this.generateSpriteFromURI(
-                                                      n
-                                                    ),
-                                                  ]
-                                                );
-                                              case 2:
-                                                return (
-                                                  (i = r.sent()),
-                                                  [
-                                                    2,
-                                                    aa(aa({}, e), {
-                                                      sprite: i,
-                                                    }),
-                                                  ]
-                                                );
-                                              case 3:
-                                                return r.sent(), [3, 4];
-                                              case 4:
-                                                return [2];
+                                                case 2:
+                                                  return (
+                                                    (i = r.sent()),
+                                                    [
+                                                      2,
+                                                      __assign(
+                                                        __assign({}, e),
+                                                        {
+                                                          sprite: i,
+                                                        }
+                                                      ),
+                                                    ]
+                                                  );
+                                                case 3:
+                                                  return r.sent(), [3, 4];
+                                                case 4:
+                                                  return [2];
+                                              }
                                             }
-                                          });
+                                          );
                                         }
                                       );
                                     })
@@ -12134,20 +12206,20 @@
                               l.setRotation(i),
                               l.setScale(s.x * r, s.y * a),
                               l.setPosition(n.x * r, n.y * a),
-                              o.replayStickerContainer.addChildAt(l, t));
+                              this_.replayStickerContainer.addChildAt(l, t));
                           }
                         }),
                         [
                           4,
                           new Promise(function (e) {
                             var t = Tiny.FadeIn(
-                              o.options.replayStickerFadeInTime
+                              this_.options.replayStickerFadeInTime
                             );
                             t.setDelay(300),
                               (t.onComplete = function () {
                                 e(undefined);
                               }),
-                              o.replayStickerContainer.runAction(t);
+                              this_.replayStickerContainer.runAction(t);
                           }),
                         ]
                       );
@@ -12179,27 +12251,28 @@
               };
             }),
             (e.prototype.replayStamp = function () {
-              return oa(this, undefined, undefined, function () {
-                var e = this;
-                return sa(this, function (t) {
+              return __awaiter(this, undefined, undefined, function () {
+                var this_ = this;
+                return __generator(this, function (t) {
                   return [
                     2,
                     new Promise(function (t) {
                       var n, i, r, a;
                       if (
-                        (null === (n = e.renderingData) || undefined === n
+                        (null === (n = this_.renderingData) || undefined === n
                           ? undefined
                           : n.stamp) &&
-                        (null === (i = e.renderingData) || undefined === i
+                        (null === (i = this_.renderingData) || undefined === i
                           ? undefined
                           : i.stamp.text)
                       ) {
-                        var o = e.options.prePeriod,
-                          s = e.rendererScale,
+                        var o = this_.options.prePeriod,
+                          s = this_.rendererScale,
                           l = s.scaleX,
                           c = s.scaleY,
                           u =
-                            null === (r = e.renderingData) || undefined === r
+                            null === (r = this_.renderingData) ||
+                            undefined === r
                               ? undefined
                               : r.stamp,
                           d = u.text,
@@ -12219,9 +12292,9 @@
                             wordWrap: true,
                             align: "center",
                           }),
-                          b = e.calcStampByText(
+                          b = this_.calcStampByText(
                             d,
-                            null === (a = e.app) || undefined === a
+                            null === (a = this_.app) || undefined === a
                               ? undefined
                               : a.renderer
                           ),
@@ -12299,7 +12372,7 @@
                           y.on("onAnimationEnd", function () {
                             t(undefined);
                           }),
-                          e.replayContainer.addChild(y);
+                          this_.replayContainer.addChild(y);
                       } else t(undefined);
                     }),
                   ];
@@ -12309,10 +12382,10 @@
             (e.prototype.extractFuResult = function (e, t) {
               if (!e)
                 return {
-                  code: J.NOTFU,
-                  errorCode: V.NotFu,
+                  code: fuErrorCodes.NOTFU,
+                  errorCode: fuDetectErrorCodes.NotFu,
                   message:
-                    t === this.options.modelCloudKeyFu ? X.NotFu : X.CoverFu,
+                    t === this.options.modelCloudKeyFu ? fuDetectErrorHints.NotFu : fuDetectErrorHints.CoverFu,
                 };
               if (e.body) {
                 var n = e.body.filter(function (e) {
@@ -12321,9 +12394,9 @@
                 });
                 if (n.length > 1)
                   return {
-                    code: J.NOTFU,
-                    errorCode: V.SingleFu,
-                    message: X.SingleFu,
+                    code: fuErrorCodes.NOTFU,
+                    errorCode: fuDetectErrorCodes.SingleFu,
+                    message: fuDetectErrorHints.SingleFu,
                   };
                 if (1 === n.length) {
                   var i = n[0],
@@ -12334,12 +12407,12 @@
                       ? this.options.fuConfThreshold
                       : this.options.completeConfThreshold)
                     ? {
-                        code: J.NOTFU,
-                        errorCode: V.NotFu,
+                        code: fuErrorCodes.NOTFU,
+                        errorCode: fuDetectErrorCodes.NotFu,
                         message:
                           t === this.options.modelCloudKeyFu
-                            ? X.NotFu
-                            : X.CoverFu,
+                            ? fuDetectErrorHints.NotFu
+                            : fuDetectErrorHints.CoverFu,
                       }
                     : t === this.options.modelCloudKeyFu &&
                       a *
@@ -12348,28 +12421,28 @@
                         (1 + this.options.fuRegionPaddingRatio) <
                         this.options.wordsRegionThreshold
                     ? {
-                        code: J.NOTFU,
-                        errorCode: V.NotFu,
+                        code: fuErrorCodes.NOTFU,
+                        errorCode: fuDetectErrorCodes.NotFu,
                         message:
                           t === this.options.modelCloudKeyFu
-                            ? X.NotFu
-                            : X.CoverFu,
+                            ? fuDetectErrorHints.NotFu
+                            : fuDetectErrorHints.CoverFu,
                       }
-                    : { code: J.FU, errorCode: V.Fu };
+                    : { code: fuErrorCodes.FU, errorCode: fuDetectErrorCodes.Fu };
                 }
                 return {
-                  code: J.NOTFU,
-                  errorCode: V.NotFu,
+                  code: fuErrorCodes.NOTFU,
+                  errorCode: fuDetectErrorCodes.NotFu,
                   message:
-                    t === this.options.modelCloudKeyFu ? X.NotFu : X.CoverFu,
+                    t === this.options.modelCloudKeyFu ? fuDetectErrorHints.NotFu : fuDetectErrorHints.CoverFu,
                 };
               }
-              return { code: J.UNKNOWN, errorCode: V.NotFu };
+              return { code: fuErrorCodes.UNKNOWN, errorCode: fuDetectErrorCodes.NotFu };
             }),
             (e.prototype.generateSpriteFromURI = function (e) {
-              return oa(this, undefined, Promise, function () {
+              return __awaiter(this, undefined, Promise, function () {
                 var t;
-                return sa(this, function (n) {
+                return __generator(this, function (n) {
                   return Tiny.TextureCache[e]
                     ? [2, new Tiny.Sprite(Tiny.TextureCache[e])]
                     : ((t = new Image()),
@@ -12439,123 +12512,127 @@
             e
           );
         })(),
-        da = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        ma = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         pa = (function () {
@@ -12575,16 +12652,16 @@
               configurable: true,
             }),
             (e.prototype.init = function () {
-              return da(this, undefined, undefined, function () {
-                return ma(this, function (e) {
+              return __awaiter(this, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   return nn.info("downgraded application", ["inited"]), [2];
                 });
               });
             }),
             (e.prototype.reset = function () {}),
             (e.prototype.replay = function () {
-              return da(this, undefined, undefined, function () {
-                return ma(this, function (e) {
+              return __awaiter(this, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   return [2];
                 });
               });
@@ -12604,8 +12681,8 @@
             }),
             (e.prototype.getRenderData = function () {}),
             (e.prototype.checkFuImage = function () {
-              return da(this, undefined, Promise, function () {
-                return ma(this, function (e) {
+              return __awaiter(this, undefined, Promise, function () {
+                return __generator(this, function (e) {
                   return [
                     2,
                     {
@@ -12621,8 +12698,8 @@
               });
             }),
             (e.prototype.checkFinalImage = function () {
-              return da(this, undefined, Promise, function () {
-                return ma(this, function (e) {
+              return __awaiter(this, undefined, Promise, function () {
+                return __generator(this, function (e) {
                   return [
                     2,
                     {
@@ -12636,8 +12713,8 @@
               });
             }),
             (e.prototype.uploadFuImage = function () {
-              return da(this, undefined, Promise, function () {
-                return ma(this, function (e) {
+              return __awaiter(this, undefined, Promise, function () {
+                return __generator(this, function (e) {
                   return [2, ""];
                 });
               });
@@ -12653,8 +12730,8 @@
               };
             }),
             (e.prototype.saveTableFile = function () {
-              return da(this, undefined, Promise, function () {
-                return ma(this, function (e) {
+              return __awaiter(this, undefined, Promise, function () {
+                return __generator(this, function (e) {
                   return [2, { tabletFileUrl: "" }];
                 });
               });
@@ -12665,22 +12742,22 @@
             (e.prototype.hideBorderGraphics = function () {}),
             (e.prototype.calcStampByText = function () {}),
             (e.prototype.setLastImg = function () {
-              return da(this, undefined, undefined, function () {
-                return ma(this, function (e) {
+              return __awaiter(this, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   return [2];
                 });
               });
             }),
             (e.prototype.changeFont = function () {
-              return da(this, undefined, undefined, function () {
-                return ma(this, function (e) {
+              return __awaiter(this, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   return [2];
                 });
               });
             }),
             (e.prototype.createDegradeBlessingSprite = function () {
-              return da(this, undefined, undefined, function () {
-                return ma(this, function (e) {
+              return __awaiter(this, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   return [2];
                 });
               });
@@ -12690,9 +12767,9 @@
             e
           );
         })(),
-        fa = function () {
+        __assign = function () {
           return (
-            (fa =
+            (__assign =
               Object.assign ||
               function (e) {
                 for (var t, n = 1, i = arguments.length; n < i; n++)
@@ -12700,7 +12777,7 @@
                     Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
                 return e;
               }),
-            fa.apply(this, arguments)
+            __assign.apply(this, arguments)
           );
         };
       function getSetActiveFont() {
@@ -12800,7 +12877,7 @@
                   (U.setItem(
                     de,
                     JSON.stringify(
-                      fa(fa({}, L), {
+                      __assign(__assign({}, L), {
                         resourceVersion: t.resourceVersion,
                         handFuStickVoList: H,
                         handFuStickTypeVoList: Q,
@@ -12950,9 +13027,9 @@
           [S]
         );
       }
-      var ya = function () {
+      var __assign = function () {
           return (
-            (ya =
+            (__assign =
               Object.assign ||
               function (e) {
                 for (var t, n = 1, i = arguments.length; n < i; n++)
@@ -12960,126 +13037,130 @@
                     Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
                 return e;
               }),
-            ya.apply(this, arguments)
+            __assign.apply(this, arguments)
           );
         },
-        wa = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        ka = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         AlipayJSAPI = window.ap;
@@ -13091,9 +13172,9 @@
         return (
           Object(React["useEffect"])(function () {
             (function () {
-              wa(e, undefined, undefined, function () {
+              __awaiter(e, undefined, undefined, function () {
                 var e, t, n, i, a, o;
-                return ka(this, function (s) {
+                return __generator(this, function (s) {
                   switch (s.label) {
                     case 0:
                       return (
@@ -13123,10 +13204,10 @@
                         (n = e[1]),
                         (i = e[2]),
                         (a = e[3]),
-                        (o = ya(
-                          ya(
-                            ya(
-                              ya({}, JSON.parse(t.configKey || "{}")),
+                        (o = __assign(
+                          __assign(
+                            __assign(
+                              __assign({}, JSON.parse(t.configKey || "{}")),
                               JSON.parse(n.configKey || "{}")
                             ),
                             { closeTfsImage: "1" === i.configKey }
@@ -13154,9 +13235,9 @@
           [n]
         );
       }
-      var Sa = function () {
+      var __assign = function () {
           return (
-            (Sa =
+            (__assign =
               Object.assign ||
               function (e) {
                 for (var t, n = 1, i = arguments.length; n < i; n++)
@@ -13164,126 +13245,130 @@
                     Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
                 return e;
               }),
-            Sa.apply(this, arguments)
+            __assign.apply(this, arguments)
           );
         },
-        Ta = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        Ca = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         };
       function Ia(e) {
@@ -13301,9 +13386,9 @@
         return (
           Object(React["useEffect"])(function () {
             (function () {
-              Ta(t, undefined, undefined, function () {
+              __awaiter(t, undefined, undefined, function () {
                 var e, t, i, r, a, s;
-                return Ca(this, function (l) {
+                return __generator(this, function (l) {
                   switch (l.label) {
                     case 0:
                       (e = new Date().getTime()), (l.label = 1);
@@ -13316,7 +13401,7 @@
                       return (
                         (t = l.sent()),
                         o(
-                          Sa(Sa({}, t), {
+                          __assign(__assign({}, t), {
                             enableShare:
                               (null === (r = t) || undefined === r
                                 ? undefined
@@ -13350,137 +13435,141 @@
           [a]
         );
       }
-      var Pa = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+      var __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        Na = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         AlipayJSAPI = window.ap;
       function Ra() {
-        var e = this,
+        var this_ = this,
           t = Object(React["useState"])(),
           n = t[0],
           r = t[1];
         return (
           Object(React["useEffect"])(function () {
             (function () {
-              Pa(e, undefined, undefined, function () {
+              __awaiter(this_, undefined, undefined, function () {
                 var e, t, n, i, a, o, s, l, c;
-                return Na(this, function (u) {
+                return __generator(this, function (u) {
                   switch (u.label) {
                     case 0:
                       return (
@@ -13560,123 +13649,127 @@
       var Ba,
         Da = __webpack_require__("a/zc"),
         za = __webpack_require__.n(Da),
-        Ma = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        ja = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         Fa = function () {},
@@ -13690,8 +13783,8 @@
             c = l[0],
             u = l[1],
             d = function () {
-              return Ma(undefined, undefined, undefined, function () {
-                return ja(this, function (e) {
+              return __awaiter(undefined, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   switch (e.label) {
                     case 0:
                       return u(true), [4, a()];
@@ -13768,9 +13861,9 @@
             )
           );
         },
-        Wa = function () {
+        __assign = function () {
           return (
-            (Wa =
+            (__assign =
               Object.assign ||
               function (e) {
                 for (var t, n = 1, i = arguments.length; n < i; n++)
@@ -13778,7 +13871,7 @@
                     Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
                 return e;
               }),
-            Wa.apply(this, arguments)
+            __assign.apply(this, arguments)
           );
         },
         Za = function (e, t) {
@@ -13823,7 +13916,7 @@
                 return {
                   ariaHidden: !!t,
                   customClassName: i,
-                  style: Wa(Wa(Wa({}, Ya), o), {
+                  style: __assign(__assign(__assign({}, Ya), o), {
                     backgroundImage: "url(" + (r || Ja) + ")",
                     width: a,
                     height: a,
@@ -13932,7 +14025,10 @@
             "div",
             { className: to.a.cover },
             React_.a.createElement("div", {
-              className: p()(to.a.img, ((t = {}), (t[to.a.start] = n), t)),
+              className: extractClassNameFromArgs()(
+                to.a.img,
+                ((t = {}), (t[to.a.start] = n), t)
+              ),
             }),
             React_.a.createElement(
               "div",
@@ -13955,11 +14051,11 @@
         mo = __webpack_require__.n(uo),
         po =
           ((Ba = {}),
-          (Ba[M.AI_GUO] = "AI_GUO"),
-          (Ba[M.JING_YE] = "JING_YE"),
-          (Ba[M.HE_XIE] = "HE_XIE"),
-          (Ba[M.YOU_SHAN] = "YOU_SHAN"),
-          (Ba[M.FU_QIANG] = "FU_QIANG"),
+          (Ba[fuCardCodes.AI_GUO] = "AI_GUO"),
+          (Ba[fuCardCodes.JING_YE] = "JING_YE"),
+          (Ba[fuCardCodes.HE_XIE] = "HE_XIE"),
+          (Ba[fuCardCodes.YOU_SHAN] = "YOU_SHAN"),
+          (Ba[fuCardCodes.FU_QIANG] = "FU_QIANG"),
           Ba),
         fo = function (e) {
           var t = e.cardType,
@@ -14085,7 +14181,7 @@
             )
           );
         },
-        bo = [M.JING_YE, M.FU_QIANG, M.AI_GUO, M.HE_XIE, M.YOU_SHAN],
+        bo = [fuCardCodes.JING_YE, fuCardCodes.FU_QIANG, fuCardCodes.AI_GUO, fuCardCodes.HE_XIE, fuCardCodes.YOU_SHAN],
         Main = function (e) {
           var t = e.backgroundVisible;
           return React_.a.createElement(
@@ -14116,129 +14212,133 @@
             })
           );
         },
-        Ao = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        _o = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
-        yo = be[M.JING_YE],
+        yo = be[fuCardCodes.JING_YE],
         wo = function (e, t) {
-          return Ao(undefined, undefined, undefined, function () {
-            return _o(this, function (n) {
+          return __awaiter(undefined, undefined, undefined, function () {
+            return __generator(this, function (n) {
               return [
                 2,
                 window.ap.call("AlipayNewYearNebulaPlugin.showFuCard", {
@@ -14282,9 +14382,9 @@
             ),
             h = Object(React["useCallback"])(
               function () {
-                return Ao(undefined, undefined, undefined, function () {
+                return __awaiter(undefined, undefined, undefined, function () {
                   var AlipayJSAPI, t, imageId, userId, secStatus, a, l, d;
-                  return _o(this, function (p) {
+                  return __generator(this, function (p) {
                     switch (p.label) {
                       case 0:
                         (AlipayJSAPI = window.ap), (p.label = 1);
@@ -14306,24 +14406,29 @@
                         return (
                           (a = p.sent().blessCardStr),
                           (function () {
-                            Ao(undefined, undefined, undefined, function () {
-                              var e;
-                              return _o(this, function (t) {
-                                switch (t.label) {
-                                  case 0:
-                                    return [
-                                      4,
-                                      lr({
-                                        userId: userId,
-                                        imageId: imageId,
-                                        closeTfsImage: c,
-                                      }),
-                                    ];
-                                  case 1:
-                                    return (e = t.sent()), m(e), [2];
-                                }
-                              });
-                            });
+                            __awaiter(
+                              undefined,
+                              undefined,
+                              undefined,
+                              function () {
+                                var e;
+                                return __generator(this, function (t) {
+                                  switch (t.label) {
+                                    case 0:
+                                      return [
+                                        4,
+                                        lr({
+                                          userId: userId,
+                                          imageId: imageId,
+                                          closeTfsImage: c,
+                                        }),
+                                      ];
+                                    case 1:
+                                      return (e = t.sent()), m(e), [2];
+                                  }
+                                });
+                              }
+                            );
                           })(),
                           [4, f]
                         );
@@ -14510,123 +14615,127 @@
         },
         To = __webpack_require__("rLng"),
         Co = __webpack_require__.n(To),
-        Io = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        Po = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         No = "c66259",
@@ -14657,8 +14766,8 @@
                   ? undefined
                   : a.length),
             b = function () {
-              return Io(undefined, undefined, undefined, function () {
-                return Po(this, function (e) {
+              return __awaiter(undefined, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   switch (e.label) {
                     case 0:
                       return d(true), sn ? (h(false), [4, _n(300)]) : [3, 2];
@@ -14686,7 +14795,7 @@
                 "div",
                 {
                   "data-aspm-click": Oo,
-                  className: p()(
+                  className: extractClassNameFromArgs()(
                     Co.a.shareBtn,
                     "image-background absolute-center-x",
                     ((t = {}), (t[Co.a.disabled] = g), t)
@@ -14704,9 +14813,9 @@
             )
           );
         },
-        ObjectAssign = function () {
+        __assign = function () {
           return (
-            (ObjectAssign =
+            (__assign =
               Object.assign ||
               function (e) {
                 for (var t, n = 1, i = arguments.length; n < i; n++)
@@ -14714,7 +14823,7 @@
                     Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
                 return e;
               }),
-            ObjectAssign.apply(this, arguments)
+            __assign.apply(this, arguments)
           );
         },
         GlobalContext = React_.a.createContext(null);
@@ -14863,7 +14972,7 @@
                 var params = startUpParams || {},
                   startUserId = params.shareUserId,
                   startImageId = params.shareImageId;
-                return ObjectAssign(ObjectAssign({}, cardsShareDetail), {
+                return __assign(__assign({}, cardsShareDetail), {
                   shareUserId: shareUserId || startUserId,
                   shareImageId: shareImageId || startImageId,
                 });
@@ -14878,129 +14987,133 @@
         },
         Lo = __webpack_require__("JACm"),
         Go = __webpack_require__.n(Lo),
-        Qo = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        Ho = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         Wo = "A*gnifSIr4NBUAAAAAAAAAAAAAARQnAQ";
       function Zo(e) {
-        return Qo(this, undefined, undefined, function () {
-          return Ho(this, function (t) {
+        return __awaiter(this, undefined, undefined, function () {
+          return __generator(this, function (t) {
             return [
               2,
               window.ap.call("downloadImage", {
@@ -15012,9 +15125,9 @@
           });
         });
       }
-      var Yo = function () {
+      var __assign = function () {
           return (
-            (Yo =
+            (__assign =
               Object.assign ||
               function (e) {
                 for (var t, n = 1, i = arguments.length; n < i; n++)
@@ -15022,126 +15135,130 @@
                     Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
                 return e;
               }),
-            Yo.apply(this, arguments)
+            __assign.apply(this, arguments)
           );
         },
-        Jo = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        Xo = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         Vo = function (e, t) {
@@ -15163,7 +15280,9 @@
         var e = this,
           t = Object(React["useReducer"])(
             function (e, t) {
-              return "update" === t.type ? Yo(Yo({}, e), t.payload) : e;
+              return "update" === t.type
+                ? __assign(__assign({}, e), t.payload)
+                : e;
             },
             {
               initializing: true,
@@ -15177,9 +15296,9 @@
           r = t[1];
         Object(React["useEffect"])(function () {
           (function () {
-            Jo(e, undefined, undefined, function () {
+            __awaiter(e, undefined, undefined, function () {
               var e;
-              return Xo(this, function (t) {
+              return __generator(this, function (t) {
                 return (
                   (e = { initializing: false }),
                   (e.current = 0),
@@ -15192,9 +15311,9 @@
           })();
         }, []);
         var a = Object(React["useCallback"])(function () {
-            return Jo(e, undefined, undefined, function () {
+            return __awaiter(e, undefined, undefined, function () {
               var e, t, n, i, a, o, s;
-              return Xo(this, function (l) {
+              return __generator(this, function (l) {
                 switch (l.label) {
                   case 0:
                     return (
@@ -15264,7 +15383,7 @@
               var e = n.current,
                 t = n.taskLimit,
                 i = Vo(n, ["current", "taskLimit"]);
-              return Yo(Yo({}, i), { canReceive: e < t });
+              return __assign(__assign({}, i), { canReceive: e < t });
             },
             [n]
           ),
@@ -15311,7 +15430,10 @@
                       "button",
                       {
                         onClick: c,
-                        className: p()(Go.a.receiveBtn, "image-background"),
+                        className: extractClassNameFromArgs()(
+                          Go.a.receiveBtn,
+                          "image-background"
+                        ),
                         "data-aspm-click": Ko,
                       },
                       "立即领取福卡"
@@ -15352,7 +15474,12 @@
             (t &&
               React_.a.createElement(
                 "div",
-                { className: p()("am-loading page", ts.a.wrapper) },
+                {
+                  className: extractClassNameFromArgs()(
+                    "am-loading page",
+                    ts.a.wrapper
+                  ),
+                },
                 React_.a.createElement(
                   "div",
                   { className: ts.a.mask },
@@ -15525,9 +15652,9 @@
           );
         },
         As = vs,
-        _s = function () {
+        __assign = function () {
           return (
-            (_s =
+            (__assign =
               Object.assign ||
               function (e) {
                 for (var t, n = 1, i = arguments.length; n < i; n++)
@@ -15535,126 +15662,130 @@
                     Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
                 return e;
               }),
-            _s.apply(this, arguments)
+            __assign.apply(this, arguments)
           );
         },
-        ys = function (e, t, n, i) {
-          function r(e) {
-            return e instanceof n
-              ? e
-              : new n(function (t) {
-                  t(e);
+        __awaiter = function (thisArg, _arguments, P, generator) {
+          function adopt(value) {
+            return value instanceof P
+              ? value
+              : new P(function (res) {
+                  res(value);
                 });
           }
-          return new (n || (n = Promise))(function (n, a) {
-            function o(e) {
+          return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) {
               try {
-                l(i.next(e));
+                step(generator.next(value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function s(e) {
+            function rejected(value) {
               try {
-                l(i["throw"](e));
+                step(generator["throw"](value));
               } catch (e) {
-                a(e);
+                reject(e);
               }
             }
-            function l(e) {
-              e.done ? n(e.value) : r(e.value).then(o, s);
+            function step(result) {
+              result.done
+                ? resolve(result.value)
+                : adopt(result.value).then(fulfilled, rejected);
             }
-            l((i = i.apply(e, t || [])).next());
+            step(
+              (generator = generator.apply(thisArg, _arguments || [])).next()
+            );
           });
         },
-        ws = function (e, t) {
-          var n,
-            i,
-            r,
-            a,
-            o = {
+        __generator = function (thisArg, body) {
+          var f,
+            y,
+            t,
+            generator,
+            _ = {
               label: 0,
               sent: function () {
-                if (1 & r[0]) throw r[1];
-                return r[1];
+                if (1 & t[0]) throw t[1];
+                return t[1];
               },
               trys: [],
               ops: [],
             };
           return (
-            (a = { next: s(0), throw: s(1), return: s(2) }),
+            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
             "function" === typeof Symbol &&
-              (a[Symbol.iterator] = function () {
+              (generator[Symbol.iterator] = function () {
                 return this;
               }),
-            a
+            generator
           );
-          function s(e) {
-            return function (t) {
-              return l([e, t]);
+          function verb(n) {
+            return function (v) {
+              return step([n, v]);
             };
           }
-          function l(a) {
-            if (n) throw new TypeError("Generator is already executing.");
-            while (o)
+          function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_)
               try {
                 if (
-                  ((n = 1),
-                  i &&
-                    (r =
-                      2 & a[0]
-                        ? i["return"]
-                        : a[0]
-                        ? i["throw"] || ((r = i["return"]) && r.call(i), 0)
-                        : i.next) &&
-                    !(r = r.call(i, a[1])).done)
+                  ((f = 1),
+                  y &&
+                    (t =
+                      2 & op[0]
+                        ? y["return"]
+                        : op[0]
+                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                        : y.next) &&
+                    !(t = t.call(y, op[1])).done)
                 )
-                  return r;
-                switch (((i = 0), r && (a = [2 & a[0], r.value]), a[0])) {
+                  return t;
+                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
                   case 0:
                   case 1:
-                    r = a;
+                    t = op;
                     break;
                   case 4:
-                    return o.label++, { value: a[1], done: false };
+                    return _.label++, { value: op[1], done: false };
                   case 5:
-                    o.label++, (i = a[1]), (a = [0]);
+                    _.label++, (y = op[1]), (op = [0]);
                     continue;
                   case 7:
-                    (a = o.ops.pop()), o.trys.pop();
+                    (op = _.ops.pop()), _.trys.pop();
                     continue;
                   default:
                     if (
-                      ((r = o.trys),
-                      !(r = r.length > 0 && r[r.length - 1]) &&
-                        (6 === a[0] || 2 === a[0]))
+                      ((t = _.trys),
+                      !(t = t.length > 0 && t[t.length - 1]) &&
+                        (6 === op[0] || 2 === op[0]))
                     ) {
-                      o = 0;
+                      _ = 0;
                       continue;
                     }
-                    if (3 === a[0] && (!r || (a[1] > r[0] && a[1] < r[3]))) {
-                      o.label = a[1];
+                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                      _.label = op[1];
                       break;
                     }
-                    if (6 === a[0] && o.label < r[1]) {
-                      (o.label = r[1]), (r = a);
+                    if (6 === op[0] && _.label < t[1]) {
+                      (_.label = t[1]), (t = op);
                       break;
                     }
-                    if (r && o.label < r[2]) {
-                      (o.label = r[2]), o.ops.push(a);
+                    if (t && _.label < t[2]) {
+                      (_.label = t[2]), _.ops.push(op);
                       break;
                     }
-                    r[2] && o.ops.pop(), o.trys.pop();
+                    t[2] && _.ops.pop(), _.trys.pop();
                     continue;
                 }
-                a = t.call(e, o);
+                op = body.call(thisArg, _);
               } catch (e) {
-                (a = [6, e]), (i = 0);
+                (op = [6, e]), (y = 0);
               } finally {
-                n = r = 0;
+                f = t = 0;
               }
-            if (5 & a[0]) throw a[1];
-            return { value: a[0] ? a[1] : undefined, done: true };
+            if (5 & op[0]) throw op[1];
+            return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
         ks = function () {
@@ -16006,448 +16137,470 @@
                 un({ importantSpm: importantSpm, streamSpm: streamSpm }),
                   Es.call("logPv");
                 var e = function () {
-                  return ys(undefined, undefined, undefined, function () {
-                    var e,
-                      t,
-                      n,
-                      i,
-                      r,
-                      a,
-                      o,
-                      s,
-                      l,
-                      c,
-                      u,
-                      d,
-                      m,
-                      p,
-                      f,
-                      h,
-                      g,
-                      b,
-                      v,
-                      A,
-                      _,
-                      y,
-                      w,
-                      k,
-                      x,
-                      E,
-                      S,
-                      T,
-                      C,
-                      I,
-                      P,
-                      N,
-                      O,
-                      R,
-                      B,
-                      D,
-                      z,
-                      M,
-                      j;
-                    return ws(this, function (F) {
-                      switch (F.label) {
-                        case 0:
-                          return (
-                            F.trys.push([0, 2, , 3]),
-                            [4, AlipayJSAPI.call("isScreenReaderEnabled")]
-                          );
-                        case 1:
-                          return (
-                            (e = F.sent().screenReaderEnabled),
-                            e
-                              ? (setCurrentPage(pageMode.ScreenReader),
-                                gt(false),
-                                [2])
-                              : [3, 3]
-                          );
-                        case 2:
-                          return F.sent(), [3, 3];
-                        case 3:
-                          if (
-                            (yn(
-                              (null === (k = homeInitResult) || undefined === k
-                                ? undefined
-                                : k.shareImageId) || ""
-                            ),
-                            vn(
-                              !!(null === (x = homeInitResult) ||
-                              undefined === x
-                                ? undefined
-                                : x.enableShare)
-                            ),
-                            ii(
-                              (null === (E = homeInitResult) || undefined === E
-                                ? undefined
-                                : E.aliasLastImageId) || ""
-                            ),
-                            (null === (S = homeInitResult) || undefined === S
-                              ? undefined
-                              : S.degradeLevel) === oe.Full)
-                          )
+                  return __awaiter(
+                    undefined,
+                    undefined,
+                    undefined,
+                    function () {
+                      var e,
+                        t,
+                        n,
+                        i,
+                        r,
+                        a,
+                        o,
+                        s,
+                        l,
+                        c,
+                        u,
+                        d,
+                        m,
+                        p,
+                        f,
+                        h,
+                        g,
+                        b,
+                        v,
+                        A,
+                        _,
+                        y,
+                        w,
+                        k,
+                        x,
+                        E,
+                        S,
+                        T,
+                        C,
+                        I,
+                        P,
+                        N,
+                        O,
+                        R,
+                        B,
+                        D,
+                        z,
+                        M,
+                        j;
+                      return __generator(this, function (F) {
+                        switch (F.label) {
+                          case 0:
                             return (
-                              setCurrentPage(pageMode.Cover), gt(false), [2]
+                              F.trys.push([0, 2, , 3]),
+                              [4, AlipayJSAPI.call("isScreenReaderEnabled")]
                             );
-                          if (
-                            !(null === (T = homeInitResult) || undefined === T
-                              ? undefined
-                              : T.enableShare) &&
-                            (null === (C = homeInitResult) || undefined === C
-                              ? undefined
-                              : C.noShowCardText) &&
-                            startUpParams.shareUserId &&
-                            startUpParams.shareImageId
-                          )
+                          case 1:
                             return (
-                              Ci(
-                                null === (I = homeInitResult) || undefined === I
+                              (e = F.sent().screenReaderEnabled),
+                              e
+                                ? (setCurrentPage(pageMode.ScreenReader),
+                                  gt(false),
+                                  [2])
+                                : [3, 3]
+                            );
+                          case 2:
+                            return F.sent(), [3, 3];
+                          case 3:
+                            if (
+                              (yn(
+                                (null === (k = homeInitResult) ||
+                                undefined === k
                                   ? undefined
-                                  : I.noShowCardText
+                                  : k.shareImageId) || ""
                               ),
-                              setCurrentPage(pageMode.Cover),
+                              vn(
+                                !!(null === (x = homeInitResult) ||
+                                undefined === x
+                                  ? undefined
+                                  : x.enableShare)
+                              ),
+                              ii(
+                                (null === (E = homeInitResult) ||
+                                undefined === E
+                                  ? undefined
+                                  : E.aliasLastImageId) || ""
+                              ),
+                              (null === (S = homeInitResult) || undefined === S
+                                ? undefined
+                                : S.degradeLevel) === oe.Full)
+                            )
+                              return (
+                                setCurrentPage(pageMode.Cover), gt(false), [2]
+                              );
+                            if (
+                              !(null === (T = homeInitResult) || undefined === T
+                                ? undefined
+                                : T.enableShare) &&
+                              (null === (C = homeInitResult) || undefined === C
+                                ? undefined
+                                : C.noShowCardText) &&
+                              startUpParams.shareUserId &&
+                              startUpParams.shareImageId
+                            )
+                              return (
+                                Ci(
+                                  null === (I = homeInitResult) ||
+                                    undefined === I
+                                    ? undefined
+                                    : I.noShowCardText
+                                ),
+                                setCurrentPage(pageMode.Cover),
+                                gt(false),
+                                [2]
+                              );
+                            if (
+                              ((t =
+                                !(null === (P = homeInitResult) ||
+                                undefined === P
+                                  ? undefined
+                                  : P.prePeriod) &&
+                                (null === (N = homeInitResult) ||
+                                undefined === N
+                                  ? undefined
+                                  : N.imgCreateOnPrePeriod)),
+                              t &&
+                                (null === (O = downgradeResult) ||
+                                undefined === O
+                                  ? undefined
+                                  : O.full))
+                            )
+                              return (
+                                setCurrentPage(pageMode.Writing),
+                                setAlreadyDrawn(true),
+                                gt(false),
+                                [2]
+                              );
+                            if (
+                              !(null === (R = homeInitResult) || undefined === R
+                                ? undefined
+                                : R.lastImgId)
+                            )
+                              return [3, 7];
+                            F.label = 4;
+                          case 4:
+                            return (
+                              F.trys.push([4, 6, , 7]),
+                              [4, cr({ imageId: homeInitResult.lastImgId })]
+                            );
+                          case 5:
+                            return (
+                              (b = F.sent()),
+                              Ut(b.current >= b.taskLimit),
+                              Kt(gn(b.benefitId, b.cacheExpire) || ""),
+                              [3, 7]
+                            );
+                          case 6:
+                            return F.sent(), Ut(false), [3, 7];
+                          case 7:
+                            return (
+                              (null === (B = homeInitResult) || undefined === B
+                                ? undefined
+                                : B.prePeriod) &&
+                                (function () {
+                                  __awaiter(
+                                    undefined,
+                                    undefined,
+                                    undefined,
+                                    function () {
+                                      var e;
+                                      return __generator(this, function (t) {
+                                        switch (t.label) {
+                                          case 0:
+                                            return (
+                                              t.trys.push([0, 2, , 3]),
+                                              [4, ur({ topicId: topicId })]
+                                            );
+                                          case 1:
+                                            return (
+                                              (e = t.sent()),
+                                              e &&
+                                                e.success &&
+                                                (Zt(e.fiveLuckyTopCards),
+                                                setFiveLuckyJumpSchema(
+                                                  e.jumpSchema
+                                                )),
+                                              [3, 3]
+                                            );
+                                          case 2:
+                                            return (
+                                              t.sent(),
+                                              nn.error("preperiod content", [
+                                                "request failed",
+                                              ]),
+                                              [3, 3]
+                                            );
+                                          case 3:
+                                            return [2];
+                                        }
+                                      });
+                                    }
+                                  );
+                                })(),
+                              [4, Bi.init()]
+                            );
+                          case 8:
+                            if ((F.sent(), gt(false), !homeInitResult))
+                              return [3, 41];
+                            F.label = 9;
+                          case 9:
+                            if (
+                              (F.trys.push([9, 39, 40, 41]),
+                              !homeInitResult.lastImgId)
+                            )
+                              return [3, 34];
+                            (n = undefined), (i = false), (F.label = 10);
+                          case 10:
+                            return (
+                              F.trys.push([10, 12, , 15]),
+                              [
+                                4,
+                                AlipayJSAPI.call("downloadImage", {
+                                  multimediaID: homeInitResult.lastImgId,
+                                  business: ie.CompletePNG,
+                                  match: 2,
+                                }),
+                              ]
+                            );
+                          case 11:
+                            return (
+                              (b = F.sent()),
+                              (n = b.data),
+                              !(null === (D = fuRegConfig) || undefined === D
+                                ? undefined
+                                : D.emptyImgFixDisable) &&
+                                n.length <
+                                  (Number(
+                                    null === (z = fuRegConfig) ||
+                                      undefined === z
+                                      ? undefined
+                                      : z.emptyImgThreshold
+                                  ) || 1e4) &&
+                                (i = true),
+                              [3, 15]
+                            );
+                          case 12:
+                            return (
+                              F.sent(),
+                              nn.error("download image", [
+                                homeInitResult.lastImgId + " failed",
+                              ]),
+                              setCurrentPage(pageMode.Writing),
                               gt(false),
+                              Bi.showTablet(),
+                              fonts ? [4, Bi.changeFont(fonts[0])] : [3, 14]
+                            );
+                          case 13:
+                            F.sent(), (F.label = 14);
+                          case 14:
+                            return [2];
+                          case 15:
+                            (r = undefined),
+                              (a = ""),
+                              (o = ""),
+                              (s = {}),
+                              (l = undefined),
+                              (c = undefined),
+                              (u = undefined),
+                              (m = 1),
+                              (F.label = 16);
+                          case 16:
+                            return (
+                              F.trys.push([16, 18, , 19]),
+                              [4, or({ imageId: homeInitResult.lastImgId })]
+                            );
+                          case 17:
+                            return (
+                              (b = F.sent()),
+                              (r = b.videoId),
+                              (a = b.pureImageId),
+                              (c = b.stickers || []),
+                              (s = b.extInfo),
+                              (o = s.pngPureImageId),
+                              (l =
+                                (s.renderer && JSON.parse(s.renderer)) || {}),
+                              (u = (s.tablet && JSON.parse(s.tablet)) || {}),
+                              (d =
+                                (s.signatureMessage &&
+                                  JSON.parse(s.signatureMessage)) ||
+                                {}),
+                              (m = b.secStatus),
+                              tn(b.secStatus),
+                              [3, 19]
+                            );
+                          case 18:
+                            return (
+                              (p = F.sent()),
+                              Ii(p.code),
+                              nn.error("query image", [
+                                homeInitResult.lastImgId + " failed",
+                              ]),
                               [2]
                             );
-                          if (
-                            ((t =
-                              !(null === (P = homeInitResult) || undefined === P
-                                ? undefined
-                                : P.prePeriod) &&
-                              (null === (N = homeInitResult) || undefined === N
-                                ? undefined
-                                : N.imgCreateOnPrePeriod)),
-                            t &&
-                              (null === (O = downgradeResult) || undefined === O
-                                ? undefined
-                                : O.full))
-                          )
+                          case 19:
+                            return (
+                              (t || i) &&
+                                (gt(true),
+                                (f = Bi.calcStampByText(d.text || "", l)
+                                  .stampPosition),
+                                (d = { position: f, text: d.text }),
+                                fn({
+                                  pureImageId: a,
+                                  videoId: r,
+                                  localJudgeResult: 1,
+                                  prePeriod: !!(null === (M = homeInitResult) ||
+                                  undefined === M
+                                    ? undefined
+                                    : M.prePeriod),
+                                  stamp: d,
+                                  sticker: c || [],
+                                  fontId: s.fontId,
+                                  roi: "",
+                                  ext: {
+                                    pngPureImageId: o,
+                                    tablet: u,
+                                    renderer: l,
+                                    fontId: s.fontId || "",
+                                    degradeLevel: Number(s.degradeLevel),
+                                    strokeNum: Number(s.strokeNum),
+                                    writeTime: Number(s.writeTime),
+                                    writeRegionRatio: Number(
+                                      s.writeRegionRatio
+                                    ),
+                                    failureNum: Number(s.failureNum),
+                                    textFailureNum: Number(s.textFailureNum),
+                                    topFailureReason: s.topFailureReason || "",
+                                    videoId: r,
+                                    secStatus: m,
+                                    isPreToNormal: 1,
+                                  },
+                                })),
+                              setCurrentPage(pageMode.Save),
+                              pt(n),
+                              Mt(homeInitResult.lastImgId),
+                              t ||
+                              null === (j = downgradeResult) ||
+                              undefined === j ||
+                              !j.replay
+                                ? [3, 21]
+                                : [4, Bi.setLastImg(n)]
+                            );
+                          case 20:
+                            F.sent(), (F.label = 21);
+                          case 21:
+                            Bi.hideBorderGraphics(),
+                              (h = undefined),
+                              (F.label = 22);
+                          case 22:
+                            return (
+                              F.trys.push([22, 26, , 27]),
+                              r
+                                ? [4, AlipayJSAPI.downloadFile({ url: r })]
+                                : [3, 25]
+                            );
+                          case 23:
+                            return (
+                              (g = F.sent().apFilePath),
+                              [
+                                4,
+                                AlipayJSAPI.call("fsManage", {
+                                  action: "readFile",
+                                  filePath: g,
+                                  encoding: "utf8",
+                                }),
+                              ]
+                            );
+                          case 24:
+                            (b = F.sent()), (h = b.data), (F.label = 25);
+                          case 25:
+                            return [3, 27];
+                          case 26:
+                            return (
+                              F.sent(),
+                              nn.error("download tablet", [r + " failed"]),
+                              gt(false),
+                              Bi.showBackground(),
+                              wt(true),
+                              Et(true),
+                              jn(true),
+                              Ut(true),
+                              Ii(""),
+                              [2]
+                            );
+                          case 27:
+                            return a.startsWith(Gi)
+                              ? ((v = (fonts || []).find(function (e) {
+                                  var t = e.id;
+                                  return "" + Gi + t === a;
+                                })),
+                                v ? [4, Bi.changeFont(v)] : [3, 30])
+                              : [3, 30];
+                          case 28:
+                            return (
+                              F.sent(), [4, Bi.createDegradeBlessingSprite(v)]
+                            );
+                          case 29:
+                            F.sent(), (F.label = 30);
+                          case 30:
+                            return (
+                              Bi.saveRenderData(
+                                {
+                                  renderer: l,
+                                  stickers: c,
+                                  tablet: u,
+                                  stamp: d,
+                                },
+                                h
+                              ),
+                              Bi.showBackground(),
+                              t || i
+                                ? (gt(false), ln(true), jn(true), [3, 33])
+                                : [3, 31]
+                            );
+                          case 31:
+                            return At(true), [4, Bi.replay()];
+                          case 32:
+                            F.sent(), At(false), (F.label = 33);
+                          case 33:
+                            return [3, 38];
+                          case 34:
+                            return (
+                              (A = window.localStorage),
+                              (_ = JSON.parse(A.getItem(de) || "{}")),
+                              _.guideShown
+                                ? [3, 35]
+                                : (setCurrentPage(pageMode.Guide),
+                                  (y = JSON.parse(A.getItem(de) || "{}")),
+                                  A.setItem(
+                                    de,
+                                    JSON.stringify(
+                                      __assign(__assign({}, y), {
+                                        guideShown: true,
+                                      })
+                                    )
+                                  ),
+                                  [3, 38])
+                            );
+                          case 35:
                             return (
                               setCurrentPage(pageMode.Writing),
-                              setAlreadyDrawn(true),
-                              gt(false),
-                              [2]
+                              Bi.showTablet(),
+                              fonts ? [4, Bi.changeFont(fonts[0])] : [3, 37]
                             );
-                          if (
-                            !(null === (R = homeInitResult) || undefined === R
-                              ? undefined
-                              : R.lastImgId)
-                          )
-                            return [3, 7];
-                          F.label = 4;
-                        case 4:
-                          return (
-                            F.trys.push([4, 6, , 7]),
-                            [4, cr({ imageId: homeInitResult.lastImgId })]
-                          );
-                        case 5:
-                          return (
-                            (b = F.sent()),
-                            Ut(b.current >= b.taskLimit),
-                            Kt(gn(b.benefitId, b.cacheExpire) || ""),
-                            [3, 7]
-                          );
-                        case 6:
-                          return F.sent(), Ut(false), [3, 7];
-                        case 7:
-                          return (
-                            (null === (B = homeInitResult) || undefined === B
-                              ? undefined
-                              : B.prePeriod) &&
-                              (function () {
-                                ys(
-                                  undefined,
-                                  undefined,
-                                  undefined,
-                                  function () {
-                                    var e;
-                                    return ws(this, function (t) {
-                                      switch (t.label) {
-                                        case 0:
-                                          return (
-                                            t.trys.push([0, 2, , 3]),
-                                            [4, ur({ topicId: topicId })]
-                                          );
-                                        case 1:
-                                          return (
-                                            (e = t.sent()),
-                                            e &&
-                                              e.success &&
-                                              (Zt(e.fiveLuckyTopCards),
-                                              setFiveLuckyJumpSchema(
-                                                e.jumpSchema
-                                              )),
-                                            [3, 3]
-                                          );
-                                        case 2:
-                                          return (
-                                            t.sent(),
-                                            nn.error("preperiod content", [
-                                              "request failed",
-                                            ]),
-                                            [3, 3]
-                                          );
-                                        case 3:
-                                          return [2];
-                                      }
-                                    });
-                                  }
-                                );
-                              })(),
-                            [4, Bi.init()]
-                          );
-                        case 8:
-                          if ((F.sent(), gt(false), !homeInitResult))
+                          case 36:
+                            F.sent(), (F.label = 37);
+                          case 37:
+                            Yi && setAlreadyDrawn(true), (F.label = 38);
+                          case 38:
                             return [3, 41];
-                          F.label = 9;
-                        case 9:
-                          if (
-                            (F.trys.push([9, 39, 40, 41]),
-                            !homeInitResult.lastImgId)
-                          )
-                            return [3, 34];
-                          (n = undefined), (i = false), (F.label = 10);
-                        case 10:
-                          return (
-                            F.trys.push([10, 12, , 15]),
-                            [
-                              4,
-                              AlipayJSAPI.call("downloadImage", {
-                                multimediaID: homeInitResult.lastImgId,
-                                business: ie.CompletePNG,
-                                match: 2,
-                              }),
-                            ]
-                          );
-                        case 11:
-                          return (
-                            (b = F.sent()),
-                            (n = b.data),
-                            !(null === (D = fuRegConfig) || undefined === D
-                              ? undefined
-                              : D.emptyImgFixDisable) &&
-                              n.length <
-                                (Number(
-                                  null === (z = fuRegConfig) || undefined === z
-                                    ? undefined
-                                    : z.emptyImgThreshold
-                                ) || 1e4) &&
-                              (i = true),
-                            [3, 15]
-                          );
-                        case 12:
-                          return (
-                            F.sent(),
-                            nn.error("download image", [
-                              homeInitResult.lastImgId + " failed",
-                            ]),
-                            setCurrentPage(pageMode.Writing),
-                            gt(false),
-                            Bi.showTablet(),
-                            fonts ? [4, Bi.changeFont(fonts[0])] : [3, 14]
-                          );
-                        case 13:
-                          F.sent(), (F.label = 14);
-                        case 14:
-                          return [2];
-                        case 15:
-                          (r = undefined),
-                            (a = ""),
-                            (o = ""),
-                            (s = {}),
-                            (l = undefined),
-                            (c = undefined),
-                            (u = undefined),
-                            (m = 1),
-                            (F.label = 16);
-                        case 16:
-                          return (
-                            F.trys.push([16, 18, , 19]),
-                            [4, or({ imageId: homeInitResult.lastImgId })]
-                          );
-                        case 17:
-                          return (
-                            (b = F.sent()),
-                            (r = b.videoId),
-                            (a = b.pureImageId),
-                            (c = b.stickers || []),
-                            (s = b.extInfo),
-                            (o = s.pngPureImageId),
-                            (l = (s.renderer && JSON.parse(s.renderer)) || {}),
-                            (u = (s.tablet && JSON.parse(s.tablet)) || {}),
-                            (d =
-                              (s.signatureMessage &&
-                                JSON.parse(s.signatureMessage)) ||
-                              {}),
-                            (m = b.secStatus),
-                            tn(b.secStatus),
-                            [3, 19]
-                          );
-                        case 18:
-                          return (
-                            (p = F.sent()),
-                            Ii(p.code),
-                            nn.error("query image", [
-                              homeInitResult.lastImgId + " failed",
-                            ]),
-                            [2]
-                          );
-                        case 19:
-                          return (
-                            (t || i) &&
-                              (gt(true),
-                              (f = Bi.calcStampByText(d.text || "", l)
-                                .stampPosition),
-                              (d = { position: f, text: d.text }),
-                              fn({
-                                pureImageId: a,
-                                videoId: r,
-                                localJudgeResult: 1,
-                                prePeriod: !!(null === (M = homeInitResult) ||
-                                undefined === M
-                                  ? undefined
-                                  : M.prePeriod),
-                                stamp: d,
-                                sticker: c || [],
-                                fontId: s.fontId,
-                                roi: "",
-                                ext: {
-                                  pngPureImageId: o,
-                                  tablet: u,
-                                  renderer: l,
-                                  fontId: s.fontId || "",
-                                  degradeLevel: Number(s.degradeLevel),
-                                  strokeNum: Number(s.strokeNum),
-                                  writeTime: Number(s.writeTime),
-                                  writeRegionRatio: Number(s.writeRegionRatio),
-                                  failureNum: Number(s.failureNum),
-                                  textFailureNum: Number(s.textFailureNum),
-                                  topFailureReason: s.topFailureReason || "",
-                                  videoId: r,
-                                  secStatus: m,
-                                  isPreToNormal: 1,
-                                },
-                              })),
-                            setCurrentPage(pageMode.Save),
-                            pt(n),
-                            Mt(homeInitResult.lastImgId),
-                            t ||
-                            null === (j = downgradeResult) ||
-                            undefined === j ||
-                            !j.replay
-                              ? [3, 21]
-                              : [4, Bi.setLastImg(n)]
-                          );
-                        case 20:
-                          F.sent(), (F.label = 21);
-                        case 21:
-                          Bi.hideBorderGraphics(),
-                            (h = undefined),
-                            (F.label = 22);
-                        case 22:
-                          return (
-                            F.trys.push([22, 26, , 27]),
-                            r
-                              ? [4, AlipayJSAPI.downloadFile({ url: r })]
-                              : [3, 25]
-                          );
-                        case 23:
-                          return (
-                            (g = F.sent().apFilePath),
-                            [
-                              4,
-                              AlipayJSAPI.call("fsManage", {
-                                action: "readFile",
-                                filePath: g,
-                                encoding: "utf8",
-                              }),
-                            ]
-                          );
-                        case 24:
-                          (b = F.sent()), (h = b.data), (F.label = 25);
-                        case 25:
-                          return [3, 27];
-                        case 26:
-                          return (
-                            F.sent(),
-                            nn.error("download tablet", [r + " failed"]),
-                            gt(false),
-                            Bi.showBackground(),
-                            wt(true),
-                            Et(true),
-                            jn(true),
-                            Ut(true),
-                            Ii(""),
-                            [2]
-                          );
-                        case 27:
-                          return a.startsWith(Gi)
-                            ? ((v = (fonts || []).find(function (e) {
-                                var t = e.id;
-                                return "" + Gi + t === a;
-                              })),
-                              v ? [4, Bi.changeFont(v)] : [3, 30])
-                            : [3, 30];
-                        case 28:
-                          return (
-                            F.sent(), [4, Bi.createDegradeBlessingSprite(v)]
-                          );
-                        case 29:
-                          F.sent(), (F.label = 30);
-                        case 30:
-                          return (
-                            Bi.saveRenderData(
-                              { renderer: l, stickers: c, tablet: u, stamp: d },
-                              h
-                            ),
-                            Bi.showBackground(),
-                            t || i
-                              ? (gt(false), ln(true), jn(true), [3, 33])
-                              : [3, 31]
-                          );
-                        case 31:
-                          return At(true), [4, Bi.replay()];
-                        case 32:
-                          F.sent(), At(false), (F.label = 33);
-                        case 33:
-                          return [3, 38];
-                        case 34:
-                          return (
-                            (A = window.localStorage),
-                            (_ = JSON.parse(A.getItem(de) || "{}")),
-                            _.guideShown
-                              ? [3, 35]
-                              : (setCurrentPage(pageMode.Guide),
-                                (y = JSON.parse(A.getItem(de) || "{}")),
-                                A.setItem(
-                                  de,
-                                  JSON.stringify(
-                                    _s(_s({}, y), { guideShown: true })
-                                  )
-                                ),
-                                [3, 38])
-                          );
-                        case 35:
-                          return (
-                            setCurrentPage(pageMode.Writing),
-                            Bi.showTablet(),
-                            fonts ? [4, Bi.changeFont(fonts[0])] : [3, 37]
-                          );
-                        case 36:
-                          F.sent(), (F.label = 37);
-                        case 37:
-                          Yi && setAlreadyDrawn(true), (F.label = 38);
-                        case 38:
-                          return [3, 41];
-                        case 39:
-                          return (w = F.sent()), Ii(w.code), [3, 41];
-                        case 40:
-                          return [7];
-                        case 41:
-                          return [2];
-                      }
-                    });
-                  });
+                          case 39:
+                            return (w = F.sent()), Ii(w.code), [3, 41];
+                          case 40:
+                            return [7];
+                          case 41:
+                            return [2];
+                        }
+                      });
+                    }
+                  );
                 };
                 e();
               }
@@ -16459,25 +16612,28 @@
               null === (t = Bi) ||
                 undefined === t ||
                 t.addSticker(
-                  _s(_s({}, e), {
+                  __assign(__assign({}, e), {
                     uniqId: Ss++,
                     initialScale: stickerInitialScale,
-                    focusLayerConfig: _s(_s({}, e.focusLayerConfig), {
-                      enableDelete: true,
-                      enableFlipX: true,
-                      enableRotate: true,
-                      enableScale: true,
-                      enableRotate180: false,
-                      enableMove: true,
-                      autoActivate: true,
-                    }),
+                    focusLayerConfig: __assign(
+                      __assign({}, e.focusLayerConfig),
+                      {
+                        enableDelete: true,
+                        enableFlipX: true,
+                        enableRotate: true,
+                        enableScale: true,
+                        enableRotate180: false,
+                        enableMove: true,
+                        autoActivate: true,
+                      }
+                    ),
                   })
                 );
             },
             onOk = function () {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var e, t;
-                return ws(this, function (n) {
+                return __generator(this, function (n) {
                   switch (n.label) {
                     case 0:
                       return (
@@ -16505,7 +16661,7 @@
               });
             },
             onNext = function () {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var e,
                   t,
                   n,
@@ -16540,7 +16696,7 @@
                   N,
                   O,
                   R;
-                return ws(this, function (B) {
+                return __generator(this, function (B) {
                   switch (B.label) {
                     case 0:
                       if (
@@ -16664,7 +16820,7 @@
                         (d = s.errorMessage),
                         (m = undefined === d ? defaultErrorHint : d),
                         (p = s.errorCode),
-                        (f = undefined === p ? V.NotFu : p),
+                        (f = undefined === p ? fuDetectErrorCodes.NotFu : p),
                         (h = s.originalResult),
                         (g = undefined === h ? {} : h),
                         (b =
@@ -16753,9 +16909,9 @@
               });
             },
             onPrev = function () {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var e;
-                return ws(this, function (t) {
+                return __generator(this, function (t) {
                   switch (t.label) {
                     case 0:
                       return (
@@ -16783,7 +16939,7 @@
               });
             },
             onNext_ = function () {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var e,
                   t,
                   n,
@@ -16820,7 +16976,7 @@
                   R,
                   B,
                   D;
-                return ws(this, function (z) {
+                return __generator(this, function (z) {
                   switch (z.label) {
                     case 0:
                       return (
@@ -17047,7 +17203,7 @@
                       );
                     case 25:
                       Ze(true),
-                        Xe(X.CoverFu),
+                        Xe(fuDetectErrorHints.CoverFu),
                         Bi.unlockAllStickers(),
                         null === (D = Bi.getStamp()) ||
                           undefined === D ||
@@ -17066,8 +17222,8 @@
               });
             },
             onActiveFontChanged = function (e) {
-              return ys(undefined, undefined, undefined, function () {
-                return ws(this, function (t) {
+              return __awaiter(undefined, undefined, undefined, function () {
+                return __generator(this, function (t) {
                   switch (t.label) {
                     case 0:
                       return setAlreadyDrawn(false), [4, Bi.changeFont(e)];
@@ -17083,8 +17239,8 @@
               });
             },
             onClear = function () {
-              return ys(undefined, undefined, undefined, function () {
-                return ws(this, function (e) {
+              return __awaiter(undefined, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   switch (e.label) {
                     case 0:
                       return (
@@ -17128,9 +17284,9 @@
                   : ut(true);
             },
             onOk_ = function () {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var e, t;
-                return ws(this, function (n) {
+                return __generator(this, function (n) {
                   switch (n.label) {
                     case 0:
                       Qt(""), (n.label = 1);
@@ -17162,8 +17318,8 @@
               });
             },
             onOk__ = function () {
-              return ys(undefined, undefined, undefined, function () {
-                return ws(this, function (e) {
+              return __awaiter(undefined, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   switch (e.label) {
                     case 0:
                       return (
@@ -17199,9 +17355,9 @@
               });
             },
             onSave = function () {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var e;
-                return ws(this, function (t) {
+                return __generator(this, function (t) {
                   return (
                     Ct(false),
                     Tn(true),
@@ -17217,9 +17373,9 @@
               });
             },
             onEntered = function () {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var e, t;
-                return ws(this, function (n) {
+                return __generator(this, function (n) {
                   switch (n.label) {
                     case 0:
                       window.scrollTo(0, 0), (n.label = 1);
@@ -17249,9 +17405,9 @@
               });
             },
             onFucard = function (e) {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var t, n, i, r;
-                return ws(this, function (a) {
+                return __generator(this, function (a) {
                   switch (a.label) {
                     case 0:
                       if (((t = ""), (n = e || zt), !n)) return [3, 11];
@@ -17313,8 +17469,8 @@
               });
             },
             onReplay = function () {
-              return ys(undefined, undefined, undefined, function () {
-                return ws(this, function (e) {
+              return __awaiter(undefined, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   switch (e.label) {
                     case 0:
                       return At(true), [4, Bi.replay()];
@@ -17325,8 +17481,8 @@
               });
             },
             onPrint = function () {
-              return ys(undefined, undefined, undefined, function () {
-                return ws(this, function (e) {
+              return __awaiter(undefined, undefined, undefined, function () {
+                return __generator(this, function (e) {
                   return (
                     printUrl && ni && qt
                       ? AlipayJSAPI.pushWindow({
@@ -17345,9 +17501,9 @@
               });
             },
             onHdMerge = function () {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var e, t;
-                return ws(this, function (n) {
+                return __generator(this, function (n) {
                   switch (n.label) {
                     case 0:
                       return (
@@ -17379,9 +17535,9 @@
               }
             },
             onOk____ = function () {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var e, t, n, i, r, a, o, s;
-                return ws(this, function (l) {
+                return __generator(this, function (l) {
                   switch (l.label) {
                     case 0:
                       return ln(false), At(true), [4, Bi.replay()];
@@ -17405,7 +17561,7 @@
                     case 3:
                       return (
                         l.trys.push([3, 5, , 6]),
-                        [4, ir(_s({ imageId: t }, dn))]
+                        [4, ir(__assign({ imageId: t }, dn))]
                       );
                     case 4:
                       return (
@@ -17459,9 +17615,9 @@
               });
             },
             onShare = function () {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var e, t, n, i, r;
-                return ws(this, function (a) {
+                return __generator(this, function (a) {
                   switch (a.label) {
                     case 0:
                       gt(true),
@@ -17494,219 +17650,234 @@
                       return (
                         gt(false),
                         (function () {
-                          ys(undefined, undefined, undefined, function () {
-                            var i, r, a, o, s, l, c;
-                            return ws(this, function (u) {
-                              switch (u.label) {
-                                case 0:
-                                  return (
-                                    u.trys.push([0, 2, , 3]),
-                                    [
-                                      4,
-                                      AlipayJSAPI.call("easyShare", {
-                                        bizType: "ztokenV0_FVQqxngP",
-                                        title: "快来抢我的手写福卡",
-                                        desc: "拼手气抢我的手写福卡",
-                                        url: e,
-                                        iconUrl:
-                                          "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*1e2nSL6HwKQAAAAAAAAAAAAAARQnAQ",
-                                        padTemplate: "0",
-                                        takeOverChannels: ["ALPContact"],
-                                        imageUrl:
-                                          "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*YWTvS4F_oyUAAAAAAAAAAAAAARQnAQ",
-                                      }),
-                                    ]
-                                  );
-                                case 1:
-                                  return (t = u.sent()), [3, 3];
-                                case 2:
-                                  return u.sent(), [3, 3];
-                                case 3:
-                                  return (
-                                    u.trys.push([3, 6, , 7]),
-                                    "ALPContact" !== t.channelName ||
-                                    "takeOver" !== t.action
-                                      ? [3, 5]
-                                      : [
-                                          4,
-                                          AlipayJSAPI.call(
-                                            "APSocialNebulaPlugin.selectContactJSAPI",
-                                            {
-                                              model: "recentSession",
-                                              enableMultiSelect: true,
-                                              multiMax: 20,
-                                            }
-                                          ),
-                                        ]
-                                  );
-                                case 4:
-                                  (o = u.sent()),
-                                    (i =
-                                      null === (s = o) || undefined === s
-                                        ? undefined
-                                        : s.groupsDictArray),
-                                    (r =
-                                      null === (l = o) || undefined === l
-                                        ? undefined
-                                        : l.contactsDicArray),
-                                    (u.label = 5);
-                                case 5:
-                                  return [3, 7];
-                                case 6:
-                                  return u.sent(), gt(false), [2];
-                                case 7:
-                                  if (!((i && i.length) || (r && r.length)))
-                                    return [3, 18];
-                                  (a = false), (u.label = 8);
-                                case 8:
-                                  return (
-                                    u.trys.push([8, 10, , 11]),
-                                    [
-                                      4,
-                                      AlipayJSAPI.call(
-                                        "APSocialNebulaPlugin.showShareDialog",
-                                        {
-                                          canInputExtra: false,
-                                          shareObject: {
-                                            type: "url",
-                                            thumbUrl:
-                                              "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*1e2nSL6HwKQAAAAAAAAAAAAAARQnAQ",
-                                            title: "快来抢我的手写福卡",
-                                            desc: "一笔一画都是见字如面的祝福",
-                                          },
-                                          shareTargets: ks(
-                                            (i &&
-                                              i.length &&
-                                              i.map(function (e) {
-                                                return {
-                                                  type: "2",
-                                                  name: e.groupName,
-                                                  headUrl: e.iconUrl,
-                                                  membersCount: e.memberCount,
-                                                };
-                                              })) ||
-                                              [],
-                                            (r &&
-                                              r.length &&
-                                              r.map(function (e) {
-                                                return {
-                                                  type: "1",
-                                                  name: e.displayName,
-                                                  headUrl: e.headUrl,
-                                                };
-                                              })) ||
-                                              []
-                                          ),
-                                        }
-                                      ),
-                                    ]
-                                  );
-                                case 9:
-                                  return (
+                          __awaiter(
+                            undefined,
+                            undefined,
+                            undefined,
+                            function () {
+                              var i, r, a, o, s, l, c;
+                              return __generator(this, function (u) {
+                                switch (u.label) {
+                                  case 0:
+                                    return (
+                                      u.trys.push([0, 2, , 3]),
+                                      [
+                                        4,
+                                        AlipayJSAPI.call("easyShare", {
+                                          bizType: "ztokenV0_FVQqxngP",
+                                          title: "快来抢我的手写福卡",
+                                          desc: "拼手气抢我的手写福卡",
+                                          url: e,
+                                          iconUrl:
+                                            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*1e2nSL6HwKQAAAAAAAAAAAAAARQnAQ",
+                                          padTemplate: "0",
+                                          takeOverChannels: ["ALPContact"],
+                                          imageUrl:
+                                            "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*YWTvS4F_oyUAAAAAAAAAAAAAARQnAQ",
+                                        }),
+                                      ]
+                                    );
+                                  case 1:
+                                    return (t = u.sent()), [3, 3];
+                                  case 2:
+                                    return u.sent(), [3, 3];
+                                  case 3:
+                                    return (
+                                      u.trys.push([3, 6, , 7]),
+                                      "ALPContact" !== t.channelName ||
+                                      "takeOver" !== t.action
+                                        ? [3, 5]
+                                        : [
+                                            4,
+                                            AlipayJSAPI.call(
+                                              "APSocialNebulaPlugin.selectContactJSAPI",
+                                              {
+                                                model: "recentSession",
+                                                enableMultiSelect: true,
+                                                multiMax: 20,
+                                              }
+                                            ),
+                                          ]
+                                    );
+                                  case 4:
                                     (o = u.sent()),
-                                    "confirm" !== o.action
-                                      ? (gt(false), [2])
-                                      : ((a = true), [3, 11])
-                                  );
-                                case 10:
-                                  return u.sent(), Ze(true), Xe(""), [3, 11];
-                                case 11:
-                                  if (!a) return [3, 18];
-                                  u.label = 12;
-                                case 12:
-                                  return (
-                                    u.trys.push([12, 17, , 18]),
-                                    i && i.length
+                                      (i =
+                                        null === (s = o) || undefined === s
+                                          ? undefined
+                                          : s.groupsDictArray),
+                                      (r =
+                                        null === (l = o) || undefined === l
+                                          ? undefined
+                                          : l.contactsDicArray),
+                                      (u.label = 5);
+                                  case 5:
+                                    return [3, 7];
+                                  case 6:
+                                    return u.sent(), gt(false), [2];
+                                  case 7:
+                                    if (!((i && i.length) || (r && r.length)))
+                                      return [3, 18];
+                                    (a = false), (u.label = 8);
+                                  case 8:
+                                    return (
+                                      u.trys.push([8, 10, , 11]),
+                                      [
+                                        4,
+                                        AlipayJSAPI.call(
+                                          "APSocialNebulaPlugin.showShareDialog",
+                                          {
+                                            canInputExtra: false,
+                                            shareObject: {
+                                              type: "url",
+                                              thumbUrl:
+                                                "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*1e2nSL6HwKQAAAAAAAAAAAAAARQnAQ",
+                                              title: "快来抢我的手写福卡",
+                                              desc:
+                                                "一笔一画都是见字如面的祝福",
+                                            },
+                                            shareTargets: ks(
+                                              (i &&
+                                                i.length &&
+                                                i.map(function (e) {
+                                                  return {
+                                                    type: "2",
+                                                    name: e.groupName,
+                                                    headUrl: e.iconUrl,
+                                                    membersCount: e.memberCount,
+                                                  };
+                                                })) ||
+                                                [],
+                                              (r &&
+                                                r.length &&
+                                                r.map(function (e) {
+                                                  return {
+                                                    type: "1",
+                                                    name: e.displayName,
+                                                    headUrl: e.headUrl,
+                                                  };
+                                                })) ||
+                                                []
+                                            ),
+                                          }
+                                        ),
+                                      ]
+                                    );
+                                  case 9:
+                                    return (
+                                      (o = u.sent()),
+                                      "confirm" !== o.action
+                                        ? (gt(false), [2])
+                                        : ((a = true), [3, 11])
+                                    );
+                                  case 10:
+                                    return u.sent(), Ze(true), Xe(""), [3, 11];
+                                  case 11:
+                                    if (!a) return [3, 18];
+                                    u.label = 12;
+                                  case 12:
+                                    return (
+                                      u.trys.push([12, 17, , 18]),
+                                      i && i.length
+                                        ? [
+                                            4,
+                                            Promise.all(
+                                              i.map(function (e) {
+                                                var t = e.groupId;
+                                                return __awaiter(
+                                                  undefined,
+                                                  undefined,
+                                                  undefined,
+                                                  function () {
+                                                    return __generator(
+                                                      this,
+                                                      function (e) {
+                                                        switch (e.label) {
+                                                          case 0:
+                                                            return [
+                                                              4,
+                                                              dr({
+                                                                imageId: n,
+                                                                inviteeId: t,
+                                                                inviteType:
+                                                                  "group",
+                                                              }),
+                                                            ];
+                                                          case 1:
+                                                            return (
+                                                              e.sent(), [2]
+                                                            );
+                                                        }
+                                                      }
+                                                    );
+                                                  }
+                                                );
+                                              })
+                                            ),
+                                          ]
+                                        : [3, 14]
+                                    );
+                                  case 13:
+                                    u.sent(), (u.label = 14);
+                                  case 14:
+                                    return r && r.length
                                       ? [
                                           4,
                                           Promise.all(
-                                            i.map(function (e) {
-                                              var t = e.groupId;
-                                              return ys(
+                                            r.map(function (e) {
+                                              var t = e.userID;
+                                              return __awaiter(
                                                 undefined,
                                                 undefined,
                                                 undefined,
                                                 function () {
-                                                  return ws(this, function (e) {
-                                                    switch (e.label) {
-                                                      case 0:
-                                                        return [
-                                                          4,
-                                                          dr({
-                                                            imageId: n,
-                                                            inviteeId: t,
-                                                            inviteType: "group",
-                                                          }),
-                                                        ];
-                                                      case 1:
-                                                        return e.sent(), [2];
+                                                  return __generator(
+                                                    this,
+                                                    function (e) {
+                                                      switch (e.label) {
+                                                        case 0:
+                                                          return [
+                                                            4,
+                                                            dr({
+                                                              imageId: n,
+                                                              inviteeId: t,
+                                                              inviteType:
+                                                                "personal",
+                                                            }),
+                                                          ];
+                                                        case 1:
+                                                          return e.sent(), [2];
+                                                      }
                                                     }
-                                                  });
+                                                  );
                                                 }
                                               );
                                             })
                                           ),
                                         ]
-                                      : [3, 14]
-                                  );
-                                case 13:
-                                  u.sent(), (u.label = 14);
-                                case 14:
-                                  return r && r.length
-                                    ? [
-                                        4,
-                                        Promise.all(
-                                          r.map(function (e) {
-                                            var t = e.userID;
-                                            return ys(
-                                              undefined,
-                                              undefined,
-                                              undefined,
-                                              function () {
-                                                return ws(this, function (e) {
-                                                  switch (e.label) {
-                                                    case 0:
-                                                      return [
-                                                        4,
-                                                        dr({
-                                                          imageId: n,
-                                                          inviteeId: t,
-                                                          inviteType:
-                                                            "personal",
-                                                        }),
-                                                      ];
-                                                    case 1:
-                                                      return e.sent(), [2];
-                                                  }
-                                                });
-                                              }
-                                            );
-                                          })
-                                        ),
-                                      ]
-                                    : [3, 16];
-                                case 15:
-                                  u.sent(), (u.label = 16);
-                                case 16:
-                                  return (
-                                    Ze(true),
-                                    Xe("发送成功"),
-                                    Sn(n),
-                                    Nn(
-                                      (null === (c = Pi) || undefined === c
-                                        ? undefined
-                                        : c.userId) || ""
-                                    ),
-                                    Dn(false),
-                                    [3, 18]
-                                  );
-                                case 17:
-                                  return u.sent(), Ze(true), Xe(""), [3, 18];
-                                case 18:
-                                  return gt(false), [2];
-                              }
-                            });
-                          });
+                                      : [3, 16];
+                                  case 15:
+                                    u.sent(), (u.label = 16);
+                                  case 16:
+                                    return (
+                                      Ze(true),
+                                      Xe("发送成功"),
+                                      Sn(n),
+                                      Nn(
+                                        (null === (c = Pi) || undefined === c
+                                          ? undefined
+                                          : c.userId) || ""
+                                      ),
+                                      Dn(false),
+                                      [3, 18]
+                                    );
+                                  case 17:
+                                    return u.sent(), Ze(true), Xe(""), [3, 18];
+                                  case 18:
+                                    return gt(false), [2];
+                                }
+                              });
+                            }
+                          );
                         })(),
                         [2]
                       );
@@ -17715,9 +17886,9 @@
               });
             },
             onShowShareDetail = function () {
-              return ys(undefined, undefined, undefined, function () {
+              return __awaiter(undefined, undefined, undefined, function () {
                 var e, t, n, i, r, a, o;
-                return ws(this, function (s) {
+                return __generator(this, function (s) {
                   switch (s.label) {
                     case 0:
                       if (
@@ -17782,10 +17953,13 @@
           if (currentPage === pageMode.ScreenReader)
             return React_.a.createElement(
               "article",
-              { className: h.a.container + " " + h.a.screenReader },
+              {
+                className:
+                  className$0.a.container + " " + className$0.a.screenReader,
+              },
               React_.a.createElement(
                 "div",
-                { className: h.a.inner },
+                { className: className$0.a.inner },
                 React_.a.createElement($o, null)
               )
             );
@@ -17813,10 +17987,13 @@
                 : c.enableShare) &&
               React_.a.createElement(
                 "article",
-                { className: h.a.container + " " + h.a.cardsShare },
+                {
+                  className:
+                    className$0.a.container + " " + className$0.a.cardsShare,
+                },
                 React_.a.createElement(
                   "div",
-                  { className: h.a.inner },
+                  { className: className$0.a.inner },
                   React_.a.createElement(App, {
                     onClose: onClose,
                     onShare: onShare,
@@ -17834,13 +18011,17 @@
               ),
             React_.a.createElement(
               "article",
-              { className: h.a.container },
+              { className: className$0.a.container },
               currentPage === pageMode.Writing &&
                 React_.a.createElement(
                   React_.a.Fragment,
                   null,
-                  React_.a.createElement("div", { className: h.a.line1 }),
-                  React_.a.createElement("div", { className: h.a.line2 })
+                  React_.a.createElement("div", {
+                    className: className$0.a.line1,
+                  }),
+                  React_.a.createElement("div", {
+                    className: className$0.a.line2,
+                  })
                 ),
               (currentPage === pageMode.Decorate ||
                 currentPage === pageMode.Save) &&
@@ -17848,14 +18029,14 @@
                   React_.a.Fragment,
                   null,
                   React_.a.createElement("div", {
-                    className: h.a.spark1,
+                    className: className$0.a.spark1,
                     style: {
                       top:
                         currentPage === pageMode.Save ? "0.05rem" : "0.26rem",
                     },
                   }),
                   React_.a.createElement("div", {
-                    className: h.a.spark2,
+                    className: className$0.a.spark2,
                     style: {
                       top:
                         currentPage === pageMode.Save ? "0.18rem" : "1.03rem",
@@ -17872,13 +18053,13 @@
                     ? undefined
                     : d.prePeriod) &&
                     React_.a.createElement("div", {
-                      className: h.a.ground,
+                      className: className$0.a.ground,
                     }),
                   React_.a.createElement("div", {
-                    className: p()(
-                      h.a.house,
+                    className: extractClassNameFromArgs()(
+                      className$0.a.house,
                       ((t = {}),
-                      (t[h.a.prePeriod] =
+                      (t[className$0.a.prePeriod] =
                         null === (m = homeInitResult) || undefined === m
                           ? undefined
                           : m.prePeriod),
@@ -17889,11 +18070,12 @@
               React_.a.createElement(
                 "div",
                 {
-                  className: p()(
-                    h.a.inner,
+                  className: extractClassNameFromArgs()(
+                    className$0.a.inner,
                     ((n = {}),
-                    (n[h.a.indecorate] = currentPage === pageMode.Decorate),
-                    (n[h.a.insave] = currentPage === pageMode.Save),
+                    (n[className$0.a.indecorate] =
+                      currentPage === pageMode.Decorate),
+                    (n[className$0.a.insave] = currentPage === pageMode.Save),
                     n)
                   ),
                 },
@@ -17905,7 +18087,7 @@
                   ? currentPage === pageMode.Save &&
                       zt &&
                       React_.a.createElement("div", {
-                        className: h.a.canvas,
+                        className: className$0.a.canvas,
                         style: {
                           width: "3.12rem",
                           height: "3.12rem",
@@ -17916,22 +18098,22 @@
                       })
                   : React_.a.createElement("canvas", {
                       id: "artboard",
-                      className: h.a.canvas,
+                      className: className$0.a.canvas,
                     }),
                 currentPage !== pageMode.Guide &&
                   React_.a.createElement(
                     React_.a.Fragment,
                     null,
                     React_.a.createElement("div", {
-                      className: h.a.title,
+                      className: className$0.a.title,
                       "aria-label": "开笔写福福气临门",
                     }),
                     React_.a.createElement(
                       "div",
                       {
-                        className: p()(
-                          h.a.subtitle,
-                          ((a = {}), (a[h.a.empty] = !Or), a)
+                        className: extractClassNameFromArgs()(
+                          className$0.a.subtitle,
+                          ((a = {}), (a[className$0.a.empty] = !Or), a)
                         ),
                         "aria-label": Or,
                       },
@@ -18064,16 +18246,21 @@
                         return Ct(false);
                       },
                       onSave: function () {
-                        return ys(undefined, undefined, undefined, function () {
-                          return ws(this, function (e) {
-                            switch (e.label) {
-                              case 0:
-                                return [4, onSave()];
-                              case 1:
-                                return e.sent(), Ct(false), [2];
-                            }
-                          });
-                        });
+                        return __awaiter(
+                          undefined,
+                          undefined,
+                          undefined,
+                          function () {
+                            return __generator(this, function (e) {
+                              switch (e.label) {
+                                case 0:
+                                  return [4, onSave()];
+                                case 1:
+                                  return e.sent(), Ct(false), [2];
+                              }
+                            });
+                          }
+                        );
                       },
                     }),
                     React_.a.createElement(As, {
@@ -21910,7 +22097,7 @@
               return n && e(t.prototype, n), i && e(t, i), t;
             };
           })(),
-          p =
+          __assign =
             Object.assign ||
             function (e) {
               for (var t = 1; t < arguments.length; t++) {
@@ -22022,12 +22209,12 @@
                 E = Math.sqrt(Math.pow(k, 2) + Math.pow(x, 2));
               (i.$fixedIndex = false),
                 (i.$icons = {}),
-                (i.$frameOpt = p({}, defaultFrame, a)),
-                (i.$zoomOpt = p({ minScale: 0.5, maxScale: 1.5 }, u)),
-                (i.$rotationOpt = p({}, f)),
-                (i.$removeOpt = p({}, b)),
-                (i.$flipxOpt = p({}, A)),
-                (i.$flipyOpt = p({}, y)),
+                (i.$frameOpt = __assign({}, defaultFrame, a)),
+                (i.$zoomOpt = __assign({ minScale: 0.5, maxScale: 1.5 }, u)),
+                (i.$rotationOpt = __assign({}, f)),
+                (i.$removeOpt = __assign({}, b)),
+                (i.$flipxOpt = __assign({}, A)),
+                (i.$flipyOpt = __assign({}, y)),
                 (i.$sprite = e),
                 (i.$spriteContainer = new Tiny.Container()),
                 (i.$container = new Tiny.Container());
@@ -22185,7 +22372,7 @@
                           : Tiny.Sprite.fromImage(c),
                       p = this.$spriteContainer,
                       f = this.$container,
-                      h = this;
+                      this_ = this;
                     (this.$icons["zoom"] = m),
                       m.setAnchor(0.5),
                       m.setPosition((e / 2) * u, (t / 2) * d),
@@ -22232,8 +22419,8 @@
                           var y = p.scale.x,
                             w = f.getChildAt(0);
                           f.removeChild(w),
-                            f.addChildAt(h.createFrame(-e * y, -t * y), 0),
-                            _(h.$icons, (e / 2) * y, (t / 2) * y);
+                            f.addChildAt(this_.createFrame(-e * y, -t * y), 0),
+                            _(this_.$icons, (e / 2) * y, (t / 2) * y);
                         }
                       }),
                       m.on("pointerup", b),
@@ -22425,7 +22612,7 @@
             );
           })(Tiny.Container);
         function _(e, t, n) {
-          var i = p({}, v, icons);
+          var i = __assign({}, v, icons);
           for (var r in i) {
             var o = g(i[r], 3),
               s = o[1],
