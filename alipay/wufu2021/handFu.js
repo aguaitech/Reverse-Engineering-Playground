@@ -4849,35 +4849,6 @@
           return plugin(component, ctx);
         }, component);
       }
-      function l(e) {
-        for (var t = 1; t < arguments.length; t++) {
-          var n = null != arguments[t] ? Object(arguments[t]) : {},
-            i = Object.keys(n);
-          "function" === typeof Object.getOwnPropertySymbols &&
-            (i = i.concat(
-              Object.getOwnPropertySymbols(n).filter(function (e) {
-                return Object.getOwnPropertyDescriptor(n, e).enumerable;
-              })
-            )),
-            i.forEach(function (t) {
-              objectDefine(e, t, n[t]);
-            });
-        }
-        return e;
-      }
-      function objectDefine(obj, key, value) {
-        return (
-          key in obj
-            ? Object.defineProperty(obj, key, {
-                value: value,
-                enumerable: true,
-                configurable: true,
-                writable: true,
-              })
-            : (obj[key] = value),
-          obj
-        );
-      }
       var plugins = [];
       function wrapper(rawComponent) {
         return function (id) {
@@ -4892,7 +4863,7 @@
               ReactDOM_.a.render(
                 React_.a.createElement(
                   wrappedComponent,
-                  l({}, ctx.schemaData, { __id: id })
+                  _objectSpread({}, ctx.schemaData, { __id: id })
                 ),
                 document.querySelector(
                   "#".concat(id, " .component-mounted-node")
@@ -5455,10 +5426,14 @@
           "alipays://platformapi/startapp?appId=20000160&appClearTop=false&startMultApp=YES&url=/www/exchangeList.html",
         basePhotoWidth = 500,
         h5dataStorageKey = "h5data-cache-fd-sxf-h5data/index-h5data",
-        benefitIdStorageKey = "h5data-cache-fd-sxf-h5data/index-h5data/benefit-id-new",
+        benefitIdStorageKey =
+          "h5data-cache-fd-sxf-h5data/index-h5data/benefit-id-new",
         base64ImagePrefix = "data:image/png;base64,",
         isChineseRegex = /^(?:[\u3400-\u4DBF一-\u9FFC\uFA0E\uFA0F\uFA11\uFA13\uFA14\uFA1F\uFA21\uFA23\uFA24\uFA27-\uFA29]|[\uD840-\uD868\uD86A-\uD86C\uD86F-\uD872\uD874-\uD879\uD880-\uD883][\uDC00-\uDFFF]|\uD869[\uDC00-\uDEDD\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEA1\uDEB0-\uDFFF]|\uD87A[\uDC00-\uDFE0]|\uD884[\uDC00-\uDF4A])$/,
-        printTemplates = { benefitId: "${_benefitId_}", mediaId: "${_mediaId_}" },
+        printTemplates = {
+          benefitId: "${_benefitId_}",
+          mediaId: "${_mediaId_}",
+        },
         clickToSignText = "点击签名",
         fuCardImages = {
           [fuCardCodes.JING_YE]:
@@ -7398,9 +7373,9 @@
             return { value: op[0] ? op[1] : undefined, done: true };
           }
         },
-        on = Platform.a.isIos(),
-        sn = Platform.a.isAndroid(),
-        ln = window.ap,
+        isIos = Platform.a.isIos(),
+        isAndroid = Platform.a.isAndroid(),
+        AlipayJSAPI = window.ap,
         cn = function () {
           var e = window,
             t = 100,
@@ -7452,34 +7427,34 @@
           n = undefined === t ? "" : t,
           i = e.streamSpm,
           r = undefined === i ? "" : i,
-          a = window.Tracert,
+          Tracert = window.Tracert,
           o = "a1747",
           s = "b25418",
           l = "bless2021",
           c = [o, s, ""].join("."),
           u = n.split(","),
           d = r.split(",");
-        a.set({ spmAPos: o, spmBPos: s, bizType: l, autoExpo: true });
+        Tracert.set({ spmAPos: o, spmBPos: s, bizType: l, autoExpo: true });
         var m = function (e) {
           return function (t) {
             var n = t.spmId,
               i = undefined === n ? "" : n;
             switch (e) {
               case "logPv":
-                a.call("config", { bizType: "bless2021important" });
+                Tracert.call("config", { bizType: "bless2021important" });
                 break;
               default:
                 u.indexOf(i.replace(c, "")) >= 0
-                  ? a.set({ bizType: "bless2021important" })
+                  ? Tracert.set({ bizType: "bless2021important" })
                   : d.indexOf(i.replace(c, "")) >= 0
-                  ? a.set({ bizType: "streambless2021" })
-                  : a.set({ bizType: "bless2021" });
+                  ? Tracert.set({ bizType: "streambless2021" })
+                  : Tracert.set({ bizType: "bless2021" });
             }
           };
         };
-        a.call("before", "click", m("click")),
-          a.call("before", "expo", m("expo")),
-          a.call("before", "logPv", m("logPv"));
+        Tracert.call("before", "click", m("click")),
+          Tracert.call("before", "expo", m("expo")),
+          Tracert.call("before", "logPv", m("logPv"));
       }
       function dn(e, t) {
         return undefined === e ? t : e;
@@ -7522,7 +7497,9 @@
         undefined === t && (t = 120);
         var n = vn(benefitIdStorageKey) || "";
         return !n && e
-          ? (nn.info("benefitId", [e, t]), bn(benefitIdStorageKey, e, 1e3 * t), e)
+          ? (nn.info("benefitId", [e, t]),
+            bn(benefitIdStorageKey, e, 1e3 * t),
+            e)
           : n;
       }
       function bn(e, t, n) {
@@ -7556,7 +7533,7 @@
       function yn(e) {
         return new Promise(function (t, n) {
           try {
-            ln.call(
+            AlipayJSAPI.call(
               "saveImage",
               { src: e, cusHandleResult: true, showActionSheet: false },
               function (e) {
@@ -7579,10 +7556,10 @@
               case 1:
                 return (
                   l.sent(),
-                  sn
+                  isAndroid
                     ? [
                         4,
-                        ln.call("snapshot", {
+                        AlipayJSAPI.call("snapshot", {
                           range: "document",
                           saveToGallery: true,
                           imageFormat: "jpg",
@@ -7603,7 +7580,7 @@
               case 3:
                 return [
                   4,
-                  ln.call("snapshot", {
+                  AlipayJSAPI.call("snapshot", {
                     range: "document",
                     saveToGallery: false,
                     dataType: "dataURL",
@@ -7681,130 +7658,7 @@
             e
           );
         },
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
-        On = window.Tracert,
+        Tracert = window.Tracert,
         Rn = function (e) {
           var t,
             n = e.visible,
@@ -7814,9 +7668,9 @@
             Object(React["useEffect"])(
               function () {
                 if (n) {
-                  On.expo("c63917"),
-                    On.expo("c64122"),
-                    On.expo("c63917.d132250");
+                  Tracert.expo("c63917"),
+                    Tracert.expo("c64122"),
+                    Tracert.expo("c63917.d132250");
                   var e = function () {
                     return __awaiter(
                       undefined,
@@ -7873,7 +7727,7 @@
         },
         Bn = Rn,
         Dn = (__webpack_require__("zkDJ"), __webpack_require__("iX1p")),
-        zn = __webpack_require__.n(Dn),
+        className$2 = __webpack_require__.n(Dn),
         Mn = function (e) {
           var t,
             n = e.id,
@@ -7885,8 +7739,8 @@
             "div",
             {
               className: extractClassNameFromArgs()(
-                zn.a.font,
-                ((t = {}), (t[zn.a.active] = i), t)
+                className$2.a.font,
+                ((t = {}), (t[className$2.a.active] = i), t)
               ),
               onClick: s,
               "data-aspm-click": "c63924.d131818_" + n,
@@ -7895,17 +7749,17 @@
             },
             React_.a.createElement(
               "div",
-              { className: zn.a.preview },
+              { className: className$2.a.preview },
               React_.a.createElement(
                 "div",
-                { className: zn.a.inner },
+                { className: className$2.a.inner },
                 React_.a.createElement("div", {
-                  className: zn.a.img,
+                  className: className$2.a.img,
                   style: { backgroundImage: "url(" + a + ")" },
                 })
               )
             ),
-            React_.a.createElement("div", { className: zn.a.name }, o)
+            React_.a.createElement("div", { className: className$2.a.name }, o)
           );
         },
         jn = function (e) {
@@ -7917,7 +7771,7 @@
           return React_.a.createElement(
             "div",
             {
-              className: zn.a.fontSelector,
+              className: className$2.a.fontSelector,
               "data-aspm": "c63924.d131818",
               "data-aspm-expo": true,
             },
@@ -7925,9 +7779,10 @@
               "div",
               {
                 className: extractClassNameFromArgs()(
-                  zn.a.fontList,
+                  className$2.a.fontList,
                   ((t = {}),
-                  (t[zn.a.degradeStatic] = i === degradeLevelCodes.Static),
+                  (t[className$2.a.degradeStatic] =
+                    i === degradeLevelCodes.Static),
                   t)
                 ),
               },
@@ -7945,7 +7800,7 @@
               }),
               React_.a.createElement(
                 "div",
-                { className: zn.a.placeholder },
+                { className: className$2.a.placeholder },
                 "\xa0"
               )
             )
@@ -7953,7 +7808,7 @@
         },
         Fn = jn,
         Un = __webpack_require__("WXTu"),
-        Ln = __webpack_require__.n(Un);
+        className$3 = __webpack_require__.n(Un);
       function __assign() {
         return (
           (__assign =
@@ -8091,7 +7946,6 @@
           );
         },
         Vn = function () {},
-        qn = window.Tracert,
         Kn = function (e) {
           var t,
             n,
@@ -8111,12 +7965,12 @@
             A = c === degradeLevelCodes.Static;
           return (
             Object(React["useEffect"])(function () {
-              qn.call("expoCheck");
+              Tracert.call("expoCheck");
             }, []),
             React_.a.createElement(
               "div",
               {
-                className: Ln.a.writing,
+                className: className$3.a.writing,
                 "data-aspm": "c63924",
                 "data-aspm-expo": true,
               },
@@ -8133,9 +7987,9 @@
               }),
               React_.a.createElement(
                 "div",
-                { className: Ln.a.blessing },
+                { className: className$3.a.blessing },
                 React_.a.createElement("div", {
-                  className: Ln.a.fontBg,
+                  className: className$3.a.fontBg,
                   "data-aspm": "c63924.d132527",
                   "data-aspm-expo": true,
                   style: {
@@ -8160,10 +8014,10 @@
                 c === degradeLevelCodes.None &&
                   React_.a.createElement(
                     "div",
-                    { className: Ln.a.buttonGroup },
+                    { className: className$3.a.buttonGroup },
                     React_.a.createElement(
                       "div",
-                      { className: Ln.a.freemode },
+                      { className: className$3.a.freemode },
                       React_.a.createElement(
                         "div",
                         { className: "am-switch" },
@@ -8199,14 +8053,14 @@
                       )
                     ),
                     React_.a.createElement("div", {
-                      className: Ln.a.divider,
+                      className: className$3.a.divider,
                     }),
                     React_.a.createElement(
                       "button",
                       {
                         className: extractClassNameFromArgs()(
-                          Ln.a.undoBtn,
-                          ((t = {}), (t[Ln.a.disabled] = A), t)
+                          className$3.a.undoBtn,
+                          ((t = {}), (t[className$3.a.disabled] = A), t)
                         ),
                         onClick: A ? Vn : h,
                         "data-aspm-click": "d131822",
@@ -8219,14 +8073,14 @@
                       "\xa0撤销"
                     ),
                     React_.a.createElement("div", {
-                      className: Ln.a.divider,
+                      className: className$3.a.divider,
                     }),
                     React_.a.createElement(
                       "button",
                       {
                         className: extractClassNameFromArgs()(
-                          Ln.a.clearBtn,
-                          ((n = {}), (n[Ln.a.disabled] = A), n)
+                          className$3.a.clearBtn,
+                          ((n = {}), (n[className$3.a.disabled] = A), n)
                         ),
                         onClick: A ? Vn : f,
                         "data-aspm-click": "d131820",
@@ -8244,8 +8098,8 @@
                 "div",
                 {
                   className: extractClassNameFromArgs()(
-                    Ln.a.btn,
-                    ((a = {}), (a[Ln.a.disabled] = !u), a)
+                    className$3.a.btn,
+                    ((a = {}), (a[className$3.a.disabled] = !u), a)
                   ),
                   "data-aspm-click": "d131823",
                   "data-aspm-expo": true,
@@ -8258,132 +8112,8 @@
         },
         $n = Kn,
         ei = __webpack_require__("AgXl"),
-        ti = __webpack_require__.n(ei),
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
+        className$4 = __webpack_require__.n(ei),
         ri = function () {},
-        ai = window.Tracert,
         oi = function (e) {
           var t,
             n,
@@ -8413,14 +8143,17 @@
             };
           return (
             Object(React["useEffect"])(function () {
-              ai.expo("c63924.d131824"), ai.expo("c63924.d131825");
+              Tracert.expo("c63924.d131824"), Tracert.expo("c63924.d131825");
             }, []),
             React_.a.createElement(
               "div",
-              { className: ti.a.decorate },
+              { className: className$4.a.decorate },
               React_.a.createElement("div", {
                 className: extractClassNameFromArgs()(
-                  ((t = {}), (t[ti.a.bg] = true), (t[ti.a.prePeriod] = a), t)
+                  ((t = {}),
+                  (t[className$4.a.bg] = true),
+                  (t[className$4.a.prePeriod] = a),
+                  t)
                 ),
               }),
               !l &&
@@ -8429,10 +8162,10 @@
                   null,
                   React_.a.createElement(
                     "div",
-                    { className: ti.a.stickerTab },
+                    { className: className$4.a.stickerTab },
                     React_.a.createElement(
                       "div",
-                      { className: ti.a.list },
+                      { className: className$4.a.list },
                       s.map(function (e) {
                         var t,
                           n = e.type;
@@ -8445,8 +8178,8 @@
                             "data-aspm-expo": true,
                             className: extractClassNameFromArgs()(
                               ((t = {}),
-                              (t[ti.a.active] = n === o),
-                              (t[ti.a.tabItem] = true),
+                              (t[className$4.a.active] = n === o),
+                              (t[className$4.a.tabItem] = true),
                               t)
                             ),
                             onClick: function () {
@@ -8461,10 +8194,10 @@
                   ),
                   React_.a.createElement(
                     "div",
-                    { className: ti.a.stickerTabContent, ref: b },
+                    { className: className$4.a.stickerTabContent, ref: b },
                     React_.a.createElement(
                       "div",
-                      { className: ti.a.list },
+                      { className: className$4.a.list },
                       null ===
                         (n = s.find(function (e) {
                           var t = e.type;
@@ -8474,7 +8207,7 @@
                         : n.children.map(function (e, t) {
                             return React_.a.createElement("div", {
                               key: e.id,
-                              className: ti.a.thumb,
+                              className: className$4.a.thumb,
                               style: {
                                 backgroundImage: "url(" + e.thumbUrl + ")",
                                 marginLeft: 0 === t ? ".12rem" : 0,
@@ -8489,19 +8222,19 @@
                 ),
               React_.a.createElement(
                 "div",
-                { className: ti.a.footer },
+                { className: className$4.a.footer },
                 React_.a.createElement(
                   "div",
-                  { className: ti.a.buttonGroup },
+                  { className: className$4.a.buttonGroup },
                   React_.a.createElement(
                     "div",
-                    { className: ti.a.prevButton, onClick: c },
+                    { className: className$4.a.prevButton, onClick: c },
                     "上一步"
                   ),
                   React_.a.createElement(
                     "div",
                     {
-                      className: ti.a.btn,
+                      className: className$4.a.btn,
                       "data-aspm-click": "c63924.d131825",
                       "data-aspm-expo": true,
                       onClick: h ? ri : v,
@@ -8509,7 +8242,7 @@
                     "完成"
                   ),
                   React_.a.createElement("div", {
-                    className: ti.a.skipButton,
+                    className: className$4.a.skipButton,
                   })
                 )
               )
@@ -8518,9 +8251,9 @@
         },
         si = oi,
         li = __webpack_require__("1INB"),
-        ci = __webpack_require__.n(li),
+        className$8 = __webpack_require__.n(li),
         ui = __webpack_require__("xJKY"),
-        di = __webpack_require__.n(ui),
+        className$5 = __webpack_require__.n(ui),
         mi = function () {},
         pi = function (e) {
           var t,
@@ -8549,38 +8282,38 @@
                 in: l,
                 timeout: 300,
                 classNames: {
-                  appear: di.a.appear,
-                  appearActive: di.a.activeAppear,
-                  appearDone: di.a.doneAppear,
-                  enter: di.a.enter,
-                  enterActive: di.a.activeEnter,
-                  enterDone: di.a.doneEnter,
-                  exit: di.a.exit,
-                  exitActive: di.a.activeExit,
-                  exitDone: di.a.doneExit,
+                  appear: className$5.a.appear,
+                  appearActive: className$5.a.activeAppear,
+                  appearDone: className$5.a.doneAppear,
+                  enter: className$5.a.enter,
+                  enterActive: className$5.a.activeEnter,
+                  enterDone: className$5.a.doneEnter,
+                  exit: className$5.a.exit,
+                  exitActive: className$5.a.activeExit,
+                  exitDone: className$5.a.doneExit,
                 },
                 unmountOnExit: true,
               },
               React_.a.createElement(
                 "div",
-                { className: di.a.wrapper },
+                { className: className$5.a.wrapper },
                 React_.a.createElement(
                   "div",
                   { className: "am-dialog-mask show" },
                   React_.a.createElement(
                     "div",
-                    { className: di.a.container },
+                    { className: className$5.a.container },
                     "cloud" === o &&
                       React_.a.createElement("div", {
-                        className: di.a.cloud,
+                        className: className$5.a.cloud,
                       }),
                     "fu" === o &&
                       React_.a.createElement("div", {
-                        className: di.a.fu,
+                        className: className$5.a.fu,
                       }),
                     React_.a.createElement(
                       "div",
-                      { className: di.a.img },
+                      { className: className$5.a.img },
                       s,
                       h
                         ? React_.a.createElement(
@@ -8590,8 +8323,8 @@
                               "div",
                               {
                                 className: extractClassNameFromArgs()(
-                                  di.a.btn1,
-                                  ((t = {}), (t[di.a.disabled] = d), t)
+                                  className$5.a.btn1,
+                                  ((t = {}), (t[className$5.a.disabled] = d), t)
                                 ),
                                 onClick: d ? mi : f,
                               },
@@ -8601,8 +8334,8 @@
                               "div",
                               {
                                 className: extractClassNameFromArgs()(
-                                  di.a.btn2,
-                                  ((n = {}), (n[di.a.disabled] = m), n)
+                                  className$5.a.btn2,
+                                  ((n = {}), (n[className$5.a.disabled] = m), n)
                                 ),
                                 onClick: m ? mi : h,
                               },
@@ -8616,8 +8349,8 @@
                               "div",
                               {
                                 className: extractClassNameFromArgs()(
-                                  di.a.singleBtn,
-                                  ((a = {}), (a[di.a.disabled] = d), a)
+                                  className$5.a.singleBtn,
+                                  ((a = {}), (a[className$5.a.disabled] = d), a)
                                 ),
                                 onClick: d ? mi : f,
                               },
@@ -8626,7 +8359,7 @@
                           )
                     ),
                     React_.a.createElement("div", {
-                      className: di.a.closeBtn,
+                      className: className$5.a.closeBtn,
                       onClick: g,
                     })
                   )
@@ -8637,7 +8370,7 @@
         },
         fi = pi,
         hi = __webpack_require__("cVRq"),
-        gi = __webpack_require__.n(hi),
+        className$6 = __webpack_require__.n(hi),
         bi = function (e) {
           var t = e.visible,
             n = e.btnText,
@@ -8649,9 +8382,17 @@
           return React_.a.createElement(
             fi,
             { type: "cloud", visible: t, btn1Text: n, onBtn1: s, onClose: l },
-            React_.a.createElement("div", { className: gi.a.title }, i),
-            React_.a.createElement("div", { className: gi.a.subtitle }, a),
-            React_.a.createElement("div", { className: gi.a.desc }, o)
+            React_.a.createElement(
+              "div",
+              { className: className$6.a.title },
+              i
+            ),
+            React_.a.createElement(
+              "div",
+              { className: className$6.a.subtitle },
+              a
+            ),
+            React_.a.createElement("div", { className: className$6.a.desc }, o)
           );
         },
         vi = bi;
@@ -8836,7 +8577,7 @@
           );
         },
         Ni = __webpack_require__("oRAV"),
-        Oi = __webpack_require__.n(Ni),
+        className$7 = __webpack_require__.n(Ni),
         Ri = function (e) {
           var t = e.visible,
             n = e.okText,
@@ -8854,143 +8595,18 @@
             },
             React_.a.createElement(
               "div",
-              { className: Oi.a.title },
+              { className: className$7.a.title },
               o ? "今日领手写福卡已达上限" : "今日已领完，明天再来吧"
             ),
-            React_.a.createElement("div", { className: Oi.a.img }),
+            React_.a.createElement("div", { className: className$7.a.img }),
             React_.a.createElement(
               "div",
-              { className: Oi.a.info },
+              { className: className$7.a.info },
               "福字可保存为壁纸 让福气常相伴"
             )
           );
         },
         Bi = Ri,
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
-        AlipayJSAPI = window.ap,
-        ji = window.Tracert,
         Fi = function () {},
         Ui = function (e) {
           var t,
@@ -9033,7 +8649,7 @@
             L = F[1],
             G = new Date().getTime() >= 16120224e5;
           Object(React["useEffect"])(function () {
-            ji.call("expoCheck");
+            Tracert.call("expoCheck");
           }, []);
           var Q = function () {
               y ? P() : D(true);
@@ -9088,27 +8704,33 @@
               "data-aspm": "c63925",
               "data-aspm-expo": true,
               className: extractClassNameFromArgs()(
-                ((t = {}), (t[ci.a.replaying] = w), (t[ci.a.save] = true), t)
+                ((t = {}),
+                (t[className$8.a.replaying] = w),
+                (t[className$8.a.save] = true),
+                t)
               ),
             },
             React_.a.createElement("div", {
               className: extractClassNameFromArgs()(
-                ((n = {}), (n[ci.a.bg] = true), (n[ci.a.prePeriod] = f), n)
+                ((n = {}),
+                (n[className$8.a.bg] = true),
+                (n[className$8.a.prePeriod] = f),
+                n)
               ),
             }),
             React_.a.createElement(
               "div",
               {
                 className: extractClassNameFromArgs()(
-                  ci.a.btnGroup,
-                  ((a = {}), (a[ci.a.disabled] = w), a)
+                  className$8.a.btnGroup,
+                  ((a = {}), (a[className$8.a.disabled] = w), a)
                 ),
                 style: { width: f || E ? "2.12rem" : "3.12rem" },
               },
               React_.a.createElement(
                 "button",
                 {
-                  className: ci.a.btn,
+                  className: className$8.a.btn,
                   "data-aspm-click": "d131828",
                   "data-aspm-expo": true,
                   onClick: w ? Fi : S,
@@ -9124,14 +8746,14 @@
                   React_.a.Fragment,
                   null,
                   React_.a.createElement("div", {
-                    className: ci.a.divider,
+                    className: className$8.a.divider,
                   }),
                   React_.a.createElement(
                     "button",
                     {
                       className: extractClassNameFromArgs()(
-                        ci.a.btn,
-                        ((o = {}), (o[ci.a.disabled] = w || v), o)
+                        className$8.a.btn,
+                        ((o = {}), (o[className$8.a.disabled] = w || v), o)
                       ),
                       onClick: w ? Fi : C,
                     },
@@ -9147,14 +8769,14 @@
                   React_.a.Fragment,
                   null,
                   React_.a.createElement("div", {
-                    className: ci.a.divider,
+                    className: className$8.a.divider,
                   }),
                   React_.a.createElement(
                     "button",
                     {
                       className: extractClassNameFromArgs()(
-                        ci.a.btn,
-                        ((s = {}), (s[ci.a.disabled] = w || g), s)
+                        className$8.a.btn,
+                        ((s = {}), (s[className$8.a.disabled] = w || g), s)
                       ),
                       "data-aspm-click": "d131829",
                       "data-aspm-expo": true,
@@ -9174,13 +8796,13 @@
                   null,
                   React_.a.createElement(
                     "div",
-                    { className: ci.a.print },
+                    { className: className$8.a.print },
                     React_.a.createElement(
                       "div",
                       {
                         className: extractClassNameFromArgs()(
-                          ci.a.printBtn,
-                          ((l = {}), (l[ci.a.disabled] = !y), l)
+                          className$8.a.printBtn,
+                          ((l = {}), (l[className$8.a.disabled] = !y), l)
                         ),
                         "data-aspm-click": "d131830",
                         "data-aspm-expo": true,
@@ -9190,8 +8812,8 @@
                     ),
                     React_.a.createElement("div", {
                       className: extractClassNameFromArgs()(
-                        ci.a.printTip,
-                        ((c = {}), (c[ci.a.disabled] = !y), c)
+                        className$8.a.printTip,
+                        ((c = {}), (c[className$8.a.disabled] = !y), c)
                       ),
                     })
                   ),
@@ -9199,8 +8821,8 @@
                     "div",
                     {
                       className: extractClassNameFromArgs()(
-                        ci.a.saveBtn,
-                        ((u = {}), (u[ci.a.disabled] = w || g), u)
+                        className$8.a.saveBtn,
+                        ((u = {}), (u[className$8.a.disabled] = w || g), u)
                       ),
                       "data-aspm-click": "d131829",
                       "data-aspm-expo": true,
@@ -9216,8 +8838,8 @@
                     "div",
                     {
                       className: extractClassNameFromArgs()(
-                        ci.a.fucardBtn,
-                        ((d = {}), (d[ci.a.disabled] = w || _ || M), d)
+                        className$8.a.fucardBtn,
+                        ((d = {}), (d[className$8.a.disabled] = w || _ || M), d)
                       ),
                       "data-aspm-click": "d131832",
                       "data-aspm-expo": true,
@@ -9262,7 +8884,7 @@
                   React_.a.createElement(
                     "div",
                     {
-                      className: ci.a.contentWrapper,
+                      className: className$8.a.contentWrapper,
                       "data-aspm-click": "d131831",
                       "data-aspm-expo": true,
                       onClick: function () {
@@ -9271,11 +8893,11 @@
                     },
                     React_.a.createElement(
                       "div",
-                      { className: ci.a.list },
+                      { className: className$8.a.list },
                       k.slice(0, 3).map(function (e) {
                         return React_.a.createElement(
                           "div",
-                          { className: ci.a.item, key: e.contentId },
+                          { className: className$8.a.item, key: e.contentId },
                           React_.a.createElement("img", {
                             src: e.coverPic.url,
                           })
@@ -9283,10 +8905,12 @@
                       })
                     )
                   ),
-                  React_.a.createElement("div", { className: ci.a.logo }),
+                  React_.a.createElement("div", {
+                    className: className$8.a.logo,
+                  }),
                   React_.a.createElement(
                     "div",
-                    { className: ci.a.bottomText },
+                    { className: className$8.a.bottomText },
                     "- 集五福活动2月1日开启，敬请期待 -"
                   )
                 )
@@ -9311,8 +8935,10 @@
               React_.a.createElement(
                 React_.a.Fragment,
                 null,
-                React_.a.createElement("div", { className: ci.a.girl }),
-                React_.a.createElement("div", { className: ci.a.boy })
+                React_.a.createElement("div", {
+                  className: className$8.a.girl,
+                }),
+                React_.a.createElement("div", { className: className$8.a.boy })
               ),
             h &&
               React_.a.createElement(
@@ -9321,8 +8947,8 @@
                   "data-aspm-click": "d131833",
                   "data-aspm-expo": true,
                   className: extractClassNameFromArgs()(
-                    ci.a.shareBtn,
-                    ((m = {}), (m[ci.a.disabled] = w || A), m)
+                    className$8.a.shareBtn,
+                    ((m = {}), (m[className$8.a.disabled] = w || A), m)
                   ),
                   onClick: w || A ? Fi : N,
                 },
@@ -9344,8 +8970,7 @@
           23: "A*MWqAQphlaeEAAAAAAAAAAAAAARQnAQ",
         },
         Wi = __webpack_require__("hq6T"),
-        Zi = __webpack_require__.n(Wi),
-        Yi = window.Tracert,
+        className$9 = __webpack_require__.n(Wi),
         Ji = function (e) {
           var t = e.disabled,
             n = e.stamp,
@@ -9359,7 +8984,7 @@
           return (
             Object(React["useEffect"])(
               function () {
-                Yi.call("expoCheck");
+                Tracert.call("expoCheck");
               },
               [o]
             ),
@@ -9377,12 +9002,12 @@
               },
               React_.a.createElement(
                 "div",
-                { className: Zi.a.info },
+                { className: className$9.a.info },
                 "给自己的福字签个名"
               ),
               React_.a.createElement(
                 "div",
-                { className: Zi.a.input },
+                { className: className$9.a.input },
                 React_.a.createElement("input", {
                   ref: d,
                   "data-aspm-click": "c63924.d131826",
@@ -9394,13 +9019,17 @@
                   },
                 })
               ),
-              React_.a.createElement("div", { className: Zi.a.errorMessage }, a)
+              React_.a.createElement(
+                "div",
+                { className: className$9.a.errorMessage },
+                a
+              )
             )
           );
         },
         Xi = Ji,
         Vi = __webpack_require__("2r/n"),
-        qi = __webpack_require__.n(Vi),
+        className$10 = __webpack_require__.n(Vi),
         Ki = function (e) {
           var t = e.visible,
             n = e.saveDisabled,
@@ -9421,13 +9050,12 @@
             },
             React_.a.createElement(
               "div",
-              { className: qi.a.info },
+              { className: className$10.a.info },
               "重写福字前，记得先保存现在的福字哦"
             )
           );
         },
-        $i = Ki,
-        AlipayJSAPI = window.ap;
+        $i = Ki;
       function tr(e) {
         var t = e.resourceVersion;
         return new Promise(function (e, n) {
@@ -9648,7 +9276,7 @@
         });
       }
       var pr = __webpack_require__("X61V"),
-        fr = __webpack_require__.n(pr),
+        className$11 = __webpack_require__.n(pr),
         hr = function (e) {
           var t = e.visible,
             n = e.okText,
@@ -9665,14 +9293,14 @@
             },
             React_.a.createElement(
               "div",
-              { className: fr.a.info },
+              { className: className$11.a.info },
               i || defaultErrorHint
             )
           );
         },
         gr = hr,
         br = __webpack_require__("mecv"),
-        vr = __webpack_require__.n(br),
+        className$12 = __webpack_require__.n(br),
         Ar = function (e) {
           var t = e.visible,
             n = e.okText,
@@ -9688,26 +9316,30 @@
             },
             React_.a.createElement(
               "div",
-              { className: vr.a.info },
+              { className: className$12.a.info },
               React_.a.createElement("img", {
                 src:
                   "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*gnifSIr4NBUAAAAAAAAAAAAAARQnAQ",
               }),
-              React_.a.createElement("div", { className: vr.a.spark1 }),
-              React_.a.createElement("div", { className: vr.a.spark2 }),
+              React_.a.createElement("div", {
+                className: className$12.a.spark1,
+              }),
+              React_.a.createElement("div", {
+                className: className$12.a.spark2,
+              }),
               React_.a.createElement(
                 "div",
-                { className: vr.a.title },
+                { className: className$12.a.title },
                 "写福字全新升级"
               ),
               React_.a.createElement(
                 "div",
-                { className: vr.a.title, style: { marginTop: 0 } },
+                { className: className$12.a.title, style: { marginTop: 0 } },
                 "手写福字可以上福卡啦～"
               ),
               React_.a.createElement(
                 "div",
-                { className: vr.a.subtitle },
+                { className: className$12.a.subtitle },
                 "快来体验新的贴纸、字体和背景吧"
               )
             )
@@ -9832,129 +9464,6 @@
           [e]
         );
       }
-      var __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        };
       function getSetCardsShareDetail() {
         return createStorage("cardsShareDetail");
       }
@@ -10056,8 +9565,6 @@
           [t]
         );
       }
-      var AlipayJSAPI = window.ap,
-        Mr = window.Tracert;
       function jr(e) {
         var homeInitResult = e.homeInitResult,
           strategyUrl = e.strategyUrl,
@@ -10085,15 +9592,15 @@
                     imageUrl:
                       "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*Yp4rQ5Kwy98AAAAAAAAAAAAAARQnAQ",
                   }),
-                    Mr.click("c63926.d131836");
+                    Tracert.click("c63926.d131836");
                 },
                 exchangeLog = function () {
                   AlipayJSAPI.pushWindow({ url: memberUrl }),
-                    Mr.click("c63926.d131835");
+                    Tracert.click("c63926.d131835");
                 },
                 rule = function () {
                   AlipayJSAPI.pushWindow({ url: strategyUrl }),
-                    Mr.click("c63926.d131834");
+                    Tracert.click("c63926.d131834");
                 },
                 customService = function () {
                   AlipayJSAPI.pushWindow({
@@ -10128,10 +9635,10 @@
                       }
                     }
                   ),
-                    isPrePeriod && Mr.expo("c63926.d131835"),
-                    Mr.expo("c63926"),
-                    Mr.expo("c63926.d131834"),
-                    Mr.expo("c63926.d131836");
+                    isPrePeriod && Tracert.expo("c63926.d131835"),
+                    Tracert.expo("c63926"),
+                    Tracert.expo("c63926.d131834"),
+                    Tracert.expo("c63926.d131836");
                 },
                 false
               );
@@ -10255,129 +9762,6 @@
         Zr = (__webpack_require__("8K25"), __webpack_require__("2gqI")),
         Yr = __webpack_require__.n(Zr),
         Jr = __webpack_require__("3Koh"),
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
         qr = (function () {
           function e(e) {
             (this.renderer = e),
@@ -10623,131 +10007,7 @@
               }),
             __assign.apply(this, arguments)
           );
-        },
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
-        AlipayJSAPI = window.ap;
+        };
       function ca(e, t) {
         var n,
           i,
@@ -11119,7 +10379,12 @@
                     this.container,
                     g
                   )),
-                  (c = Wr["scale"](l, basePhotoWidth, basePhotoWidth, "transparent").toDataURL())),
+                  (c = Wr["scale"](
+                    l,
+                    basePhotoWidth,
+                    basePhotoWidth,
+                    "transparent"
+                  ).toDataURL())),
                 (null === (o = e) || undefined === o
                   ? undefined
                   : o.iosSnapshotImageData) &&
@@ -11136,7 +10401,9 @@
                     this.container,
                     g
                   )),
-                  (u = Wr["scale"](l, basePrintWidth, basePrintWidth).toDataURL("image/jpeg")),
+                  (u = Wr["scale"](l, basePrintWidth, basePrintWidth).toDataURL(
+                    "image/jpeg"
+                  )),
                   (this.saveContainer.visible = false)),
                 this.mainMask &&
                   (this.stickerContainer.addChild(this.mainMask),
@@ -11305,9 +10572,12 @@
                           this.mainContainer,
                           g
                         )),
-                        (k = Wr["scale"](b, basePrintWidth, basePrintWidth, 16777215).toDataURL(
-                          "image/jpeg"
-                        )),
+                        (k = Wr["scale"](
+                          b,
+                          basePrintWidth,
+                          basePrintWidth,
+                          16777215
+                        ).toDataURL("image/jpeg")),
                         (this.writeRegionRatio =
                           (d.width * d.height) / (((o / l) * s) / l)),
                         this.writeRegionRatio <
@@ -11738,7 +11008,13 @@
                   switch (n.label) {
                     case 0:
                       return (
-                        (t = this), [4, this.generateSpriteFromURI("" + base64ImagePrefix + e)]
+                        (t = this),
+                        [
+                          4,
+                          this.generateSpriteFromURI(
+                            "" + base64ImagePrefix + e
+                          ),
+                        ]
                       );
                     case 1:
                       return (
@@ -12558,129 +11834,6 @@
             e
           );
         })(),
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
         pa = (function () {
           function e(e) {
             this.options = e;
@@ -13076,142 +12229,18 @@
         );
       }
       var __assign = function () {
-          return (
-            (__assign =
-              Object.assign ||
-              function (e) {
-                for (var t, n = 1, i = arguments.length; n < i; n++)
-                  for (var r in ((t = arguments[n]), t))
-                    Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
-                return e;
-              }),
-            __assign.apply(this, arguments)
-          );
-        },
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
-        AlipayJSAPI = window.ap;
+        return (
+          (__assign =
+            Object.assign ||
+            function (e) {
+              for (var t, n = 1, i = arguments.length; n < i; n++)
+                for (var r in ((t = arguments[n]), t))
+                  Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
+              return e;
+            }),
+          __assign.apply(this, arguments)
+        );
+      };
       function Ea() {
         var e = this,
           t = createStorage("fuRegConfig"),
@@ -13284,141 +12313,18 @@
         );
       }
       var __assign = function () {
-          return (
-            (__assign =
-              Object.assign ||
-              function (e) {
-                for (var t, n = 1, i = arguments.length; n < i; n++)
-                  for (var r in ((t = arguments[n]), t))
-                    Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
-                return e;
-              }),
-            __assign.apply(this, arguments)
-          );
-        },
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        };
+        return (
+          (__assign =
+            Object.assign ||
+            function (e) {
+              for (var t, n = 1, i = arguments.length; n < i; n++)
+                for (var r in ((t = arguments[n]), t))
+                  Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
+              return e;
+            }),
+          __assign.apply(this, arguments)
+        );
+      };
       function Ia(e) {
         var t = this,
           n = e.onError,
@@ -13483,130 +12389,6 @@
           [a]
         );
       }
-      var __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
-        AlipayJSAPI = window.ap;
       function Ra() {
         var this_ = this,
           t = Object(React["useState"])(),
@@ -13696,130 +12478,7 @@
       }
       var Ba,
         Da = __webpack_require__("a/zc"),
-        za = __webpack_require__.n(Da),
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
+        className$13 = __webpack_require__.n(Da),
         Fa = function () {},
         Ua = function (e) {
           var t = e.imageId,
@@ -13850,32 +12509,32 @@
             (n &&
               React_.a.createElement(
                 "div",
-                { className: za.a.wrapper },
+                { className: className$13.a.wrapper },
                 React_.a.createElement(
                   "div",
                   { className: "am-dialog-mask show" },
                   React_.a.createElement(
                     "div",
-                    { className: za.a.container },
+                    { className: className$13.a.container },
                     React_.a.createElement(
                       "div",
-                      { className: za.a.img },
+                      { className: className$13.a.img },
                       React_.a.createElement("img", {
                         src: baseUrl + "/" + t,
                       }),
                       React_.a.createElement("div", {
                         "data-aspm-click": "c66256.d136327",
                         "data-aspm-expo": true,
-                        className: za.a.okBtn,
+                        className: className$13.a.okBtn,
                         onClick: c ? Fa : d,
                       }),
                       React_.a.createElement("div", {
-                        className: za.a.rewriteBtn,
+                        className: className$13.a.rewriteBtn,
                         onClick: o,
                       })
                     ),
                     React_.a.createElement("div", {
-                      className: za.a.closeBtn,
+                      className: className$13.a.closeBtn,
                       onClick: s,
                     })
                   )
@@ -13886,23 +12545,27 @@
         },
         La = Ua,
         Ga = __webpack_require__("oW8E"),
-        Qa = __webpack_require__.n(Ga),
+        className$14 = __webpack_require__.n(Ga),
         Ha = function (e) {
           var t = e.onClose,
             n = e.children;
           return React_.a.createElement(
             "div",
-            { className: Qa.a.modal },
+            { className: className$14.a.modal },
             React_.a.createElement(
               "div",
               { className: "am-dialog-mask show", role: "document" },
               React_.a.createElement(
                 "div",
-                { className: Qa.a.container },
-                React_.a.createElement("div", { className: Qa.a.body }, n),
+                { className: className$14.a.container },
+                React_.a.createElement(
+                  "div",
+                  { className: className$14.a.body },
+                  n
+                ),
                 React_.a.createElement("button", {
                   "aria-label": "双击以关闭对话框",
-                  className: Qa.a.closeBtn,
+                  className: className$14.a.closeBtn,
                   onClick: t,
                 })
               )
@@ -13989,7 +12652,7 @@
           });
         },
         Va = __webpack_require__("IlFc"),
-        qa = __webpack_require__.n(Va),
+        className$15 = __webpack_require__.n(Va),
         Ka =
           "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*vvUMSLnPTxYAAAAAAAAAAAAAARQnAQ/os",
         $a = function (e) {
@@ -14024,7 +12687,7 @@
                   { onClose: s },
                   React_.a.createElement(
                     "div",
-                    { className: qa.a.cardsOutModal },
+                    { className: className$15.a.cardsOutModal },
                     React_.a.createElement(Xa, {
                       size: "0.34rem",
                       borderWidth: "0.016rem",
@@ -14033,29 +12696,30 @@
                         null === (n = cardsShareDetail) || undefined === n
                           ? undefined
                           : n.shareHeadImg,
-                      customClassName: qa.a.avatar,
+                      customClassName: className$15.a.avatar,
                       ariaHidden: true,
                     }),
                     React_.a.createElement(
                       "div",
-                      { className: "" + qa.a.nickName },
+                      { className: "" + className$15.a.nickName },
                       null === (a = cardsShareDetail) || undefined === a
                         ? undefined
                         : a.shareNickName
                     ),
                     React_.a.createElement(
                       "div",
-                      { className: "" + qa.a.guideText },
+                      { className: "" + className$15.a.guideText },
                       "“每一笔一画，都是见字如面的祝福”"
                     ),
                     React_.a.createElement("div", {
                       className:
-                        qa.a.fu + " image-background absolute-center-x",
+                        className$15.a.fu +
+                        " image-background absolute-center-x",
                       style: { backgroundImage: "url(" + d + ")" },
                     }),
                     React_.a.createElement(
                       "div",
-                      { className: qa.a.outText },
+                      { className: className$15.a.outText },
                       "来晚一步，福卡已领完"
                     )
                   )
@@ -14064,39 +12728,39 @@
           );
         },
         eo = __webpack_require__("ktv6"),
-        to = __webpack_require__.n(eo),
+        className$16 = __webpack_require__.n(eo),
         no = function (e) {
           var t,
             n = e.isStart,
             i = e.text;
           return React_.a.createElement(
             "div",
-            { className: to.a.cover },
+            { className: className$16.a.cover },
             React_.a.createElement("div", {
               className: extractClassNameFromArgs()(
-                to.a.img,
-                ((t = {}), (t[to.a.start] = n), t)
+                className$16.a.img,
+                ((t = {}), (t[className$16.a.start] = n), t)
               ),
             }),
             React_.a.createElement(
               "div",
-              { className: to.a.info },
+              { className: className$16.a.info },
               i || "集福已截止，恭祝新春大吉"
             ),
-            React_.a.createElement("div", { className: to.a.light1 }),
-            React_.a.createElement("div", { className: to.a.light2 }),
-            React_.a.createElement("div", { className: to.a.light3 })
+            React_.a.createElement("div", { className: className$16.a.light1 }),
+            React_.a.createElement("div", { className: className$16.a.light2 }),
+            React_.a.createElement("div", { className: className$16.a.light3 })
           );
         },
         io = no,
         ro = __webpack_require__("p7od"),
-        classNameDict = __webpack_require__.n(ro),
+        className$21 = __webpack_require__.n(ro),
         oo = __webpack_require__("ENj2"),
-        so = __webpack_require__.n(oo),
+        className$19 = __webpack_require__.n(oo),
         lo = __webpack_require__("fsy2"),
-        co = __webpack_require__.n(lo),
+        className$18 = __webpack_require__.n(lo),
         uo = __webpack_require__("NKb8"),
-        mo = __webpack_require__.n(uo),
+        className$17 = __webpack_require__.n(uo),
         po =
           ((Ba = {}),
           (Ba[fuCardCodes.AI_GUO] = "AI_GUO"),
@@ -14122,13 +12786,17 @@
             "div",
             {
               className:
-                mo.a.smallFu + " " + mo.a[s] + " image-background " + a,
+                className$17.a.smallFu +
+                " " +
+                className$17.a[s] +
+                " image-background " +
+                a,
             },
             React_.a.createElement("div", {
-              className: mo.a.title + " image-background",
+              className: className$17.a.title + " image-background",
             }),
             React_.a.createElement("div", {
-              className: mo.a.fu + " image-background",
+              className: className$17.a.fu + " image-background",
               style: l,
             })
           );
@@ -14155,7 +12823,7 @@
                 return l
                   ? React_.a.createElement(
                       "div",
-                      { className: co.a.receiver },
+                      { className: className$18.a.receiver },
                       React_.a.createElement(Xa, {
                         size: "0.195rem",
                         borderWidth: "0.015rem",
@@ -14165,17 +12833,17 @@
                             ? undefined
                             : e.shareHeadImg,
                         ariaHidden: true,
-                        customClassName: co.a.avatar,
+                        customClassName: className$18.a.avatar,
                       }),
                       React_.a.createElement(
                         "div",
-                        { className: co.a.text },
+                        { className: className$18.a.text },
                         l.shareNickName || ""
                       )
                     )
                   : React_.a.createElement(
                       "div",
-                      { className: co.a.placeholder },
+                      { className: className$18.a.placeholder },
                       React_.a.createElement("span", null, "待领取")
                     );
               },
@@ -14183,7 +12851,12 @@
             );
           return React_.a.createElement(
             "div",
-            { className: co.a.receiveBlock + " " + co.a["pos" + (o + 1)] },
+            {
+              className:
+                className$18.a.receiveBlock +
+                " " +
+                className$18.a["pos" + (o + 1)],
+            },
             c
           );
         },
@@ -14205,11 +12878,11 @@
             m = Object(React["useMemo"])(
               function () {
                 return (
-                  co.a.petal +
+                  className$18.a.petal +
                   " " +
-                  co.a["pos" + (a + 1)] +
+                  className$18.a["pos" + (a + 1)] +
                   " " +
-                  (d ? "" : co.a.notReceived)
+                  (d ? "" : className$18.a.notReceived)
                 );
               },
               [a, d]
@@ -14223,7 +12896,7 @@
               { className: m },
               React_.a.createElement(
                 "div",
-                { className: co.a.fuCard },
+                { className: className$18.a.fuCard },
                 React_.a.createElement(fo, { cardType: n, imageId: p })
               )
             )
@@ -14240,7 +12913,7 @@
           var t = e.backgroundVisible;
           return React_.a.createElement(
             "div",
-            { className: co.a.flower },
+            { className: className$18.a.flower },
             bo.map(function (e, t) {
               return React_.a.createElement(
                 React_.a.Fragment,
@@ -14258,136 +12931,13 @@
               );
             }),
             React_.a.createElement("div", {
-              className: co.a.background,
+              className: className$18.a.background,
               style: { display: t ? "block" : "none" },
             }),
             React_.a.createElement("div", {
-              className: co.a.foreground + " image-background",
+              className: className$18.a.foreground + " image-background",
             })
           );
-        },
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
         },
         yo = fuCardImages[fuCardCodes.JING_YE],
         wo = function (e, t) {
@@ -14534,7 +13084,7 @@
                   { onClose: o },
                   React_.a.createElement(
                     "div",
-                    { className: so.a.receiveModalContent },
+                    { className: className$19.a.receiveModalContent },
                     React_.a.createElement(Xa, {
                       size: "0.34rem",
                       borderWidth: "0.016rem",
@@ -14543,36 +13093,44 @@
                         null === (n = context) || undefined === n
                           ? undefined
                           : n.shareHeadImg,
-                      customClassName: so.a.avatar,
+                      customClassName: className$19.a.avatar,
                       ariaHidden: true,
                     }),
                     React_.a.createElement(
                       "div",
-                      { className: so.a.nickName + " absolute-center-x" },
+                      {
+                        className:
+                          className$19.a.nickName + " absolute-center-x",
+                      },
                       (null === (a = context) || undefined === a
                         ? undefined
                         : a.shareNickName) || "手写套卡"
                     ),
                     React_.a.createElement(
                       "div",
-                      { className: so.a.guideText + " absolute-center-x" },
+                      {
+                        className:
+                          className$19.a.guideText + " absolute-center-x",
+                      },
                       "“五种福卡各有一张，拼手气抢福卡”"
                     ),
                     React_.a.createElement(
                       "div",
                       {
-                        className: "image-background " + so.a.redPacks,
+                        className:
+                          "image-background " + className$19.a.redPacks,
                         "aria-hidden": true,
                       },
                       React_.a.createElement("div", {
-                        className: "image-background " + so.a.fu,
+                        className: "image-background " + className$19.a.fu,
                         style: { backgroundImage: "url(" + g + ")" },
                       })
                     ),
                     React_.a.createElement(
                       "div",
                       {
-                        className: so.a.receiveBtn + " image-background",
+                        className:
+                          className$19.a.receiveBtn + " image-background",
                         "data-aspm-click": "c66257.d136328",
                         role: "button",
                         onClick: h,
@@ -14651,13 +13209,14 @@
               }),
               React_.a.createElement(
                 "div",
-                { className: so.a.btnArea, "data-aspm": xo },
+                { className: className$19.a.btnArea, "data-aspm": xo },
                 React_.a.createElement(
                   "div",
                   {
                     "data-aspm-click": Eo,
                     className:
-                      so.a.fuBtn + " image-background absolute-center-x",
+                      className$19.a.fuBtn +
+                      " image-background absolute-center-x",
                     role: "button",
                     onClick: onClose,
                   },
@@ -14668,130 +13227,7 @@
           );
         },
         To = __webpack_require__("rLng"),
-        Co = __webpack_require__.n(To),
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
+        className$20 = __webpack_require__.n(To),
         No = "c66259",
         Oo = "d136375",
         Ro = function () {},
@@ -14824,7 +13260,9 @@
                 return __generator(this, function (e) {
                   switch (e.label) {
                     case 0:
-                      return d(true), sn ? (h(false), [4, _n(300)]) : [3, 2];
+                      return (
+                        d(true), isAndroid ? (h(false), [4, _n(300)]) : [3, 2]
+                      );
                     case 1:
                       e.sent(), (e.label = 2);
                     case 2:
@@ -14832,7 +13270,7 @@
                     case 3:
                       return e.sent(), [4, _n(300)];
                     case 4:
-                      return e.sent(), sn && h(true), d(false), [2];
+                      return e.sent(), isAndroid && h(true), d(false), [2];
                   }
                 });
               });
@@ -14844,15 +13282,15 @@
             React_.a.createElement(Main, { backgroundVisible: f }),
             React_.a.createElement(
               "div",
-              { className: Co.a.shareBtnArea, "data-aspm": No },
+              { className: className$20.a.shareBtnArea, "data-aspm": No },
               React_.a.createElement(
                 "div",
                 {
                   "data-aspm-click": Oo,
                   className: extractClassNameFromArgs()(
-                    Co.a.shareBtn,
+                    className$20.a.shareBtn,
                     "image-background absolute-center-x",
-                    ((t = {}), (t[Co.a.disabled] = g), t)
+                    ((t = {}), (t[className$20.a.disabled] = g), t)
                   ),
                   role: "button",
                   onClick: g ? Ro : b,
@@ -14862,7 +13300,7 @@
             ),
             React_.a.createElement(
               "div",
-              { className: classNameDict.a.closeBtn, onClick: onClose },
+              { className: className$21.a.closeBtn, onClick: onClose },
               "返回"
             )
           );
@@ -14920,7 +13358,7 @@
                     "张未领取";
               return React_.a.createElement(
                 "div",
-                { className: "" + classNameDict.a.cardsStatusText },
+                { className: "" + className$21.a.cardsStatusText },
                 React_.a.createElement("div", null, hintText)
               );
             },
@@ -14944,7 +13382,7 @@
                     null,
                     React_.a.createElement(
                       "span",
-                      { className: classNameDict.a.nickName },
+                      { className: className$21.a.nickName },
                       shareNikeName
                     ),
                     React_.a.createElement("span", null, "的手写套卡")
@@ -14955,10 +13393,10 @@
           );
         return React_.a.createElement(
           "div",
-          { className: classNameDict.a.cardsTitleArea },
+          { className: className$21.a.cardsTitleArea },
           React_.a.createElement(
             "div",
-            { className: classNameDict.a.cardsTitle + " absolute-center-x" },
+            { className: className$21.a.cardsTitle + " absolute-center-x" },
             React_.a.createElement(Xa, {
               size: "0.405rem",
               borderWidth: "0.0192rem",
@@ -14968,12 +13406,12 @@
                 undefined === shareDetailCopy
                   ? undefined
                   : shareDetailCopy.shareHeadImg,
-              customClassName: classNameDict.a.avatar,
+              customClassName: className$21.a.avatar,
               ariaHidden: true,
             }),
             React_.a.createElement(
               "div",
-              { className: classNameDict.a.text },
+              { className: className$21.a.text },
               title
             ),
             React_.a.createElement(HeaderDescription, {
@@ -15040,130 +13478,7 @@
           );
         },
         Lo = __webpack_require__("JACm"),
-        Go = __webpack_require__.n(Lo),
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
+        className$22 = __webpack_require__.n(Lo),
         Wo = "A*gnifSIr4NBUAAAAAAAAAAAAAARQnAQ";
       function Zo(e) {
         return __awaiter(this, undefined, undefined, function () {
@@ -15191,129 +13506,6 @@
               }),
             __assign.apply(this, arguments)
           );
-        },
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
         },
         Vo = function (e, t) {
           var n = {};
@@ -15479,13 +13671,13 @@
                   null,
                   React_.a.createElement(
                     "div",
-                    { className: Go.a.bottomBar },
+                    { className: className$22.a.bottomBar },
                     React_.a.createElement(
                       "button",
                       {
                         onClick: c,
                         className: extractClassNameFromArgs()(
-                          Go.a.receiveBtn,
+                          className$22.a.receiveBtn,
                           "image-background"
                         ),
                         "data-aspm-click": Ko,
@@ -15496,32 +13688,32 @@
                 )
               : React_.a.createElement(
                   "div",
-                  { className: Go.a.outText },
+                  { className: className$22.a.outText },
                   s || "今日福卡已领完"
                 );
           })();
           return React_.a.createElement(
             "div",
-            { className: Go.a.screenReader },
+            { className: className$22.a.screenReader },
             React_.a.createElement(
               "div",
-              { className: Go.a.background },
+              { className: className$22.a.background },
               React_.a.createElement("div", {
-                className: Go.a.fu + " image-background",
+                className: className$22.a.fu + " image-background",
                 "aria-hidden": true,
                 style: { backgroundImage: "url(" + u + ")" },
               }),
               d,
               React_.a.createElement(
                 "div",
-                { className: Go.a.title },
+                { className: className$22.a.title },
                 "开笔写福，福气临门"
               )
             )
           );
         },
         es = __webpack_require__("iKF7"),
-        ts = __webpack_require__.n(es),
+        className$23 = __webpack_require__.n(es),
         ns = function (e) {
           var t = e.visible;
           return (
@@ -15531,14 +13723,14 @@
                 {
                   className: extractClassNameFromArgs()(
                     "am-loading page",
-                    ts.a.wrapper
+                    className$23.a.wrapper
                   ),
                 },
                 React_.a.createElement(
                   "div",
-                  { className: ts.a.mask },
+                  { className: className$23.a.mask },
                   React_.a.createElement("img", {
-                    className: ts.a.icon,
+                    className: className$23.a.icon,
                     src:
                       "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*QQ2kRrlBOfIAAAAAAAAAAAAAARQnAQ",
                   })
@@ -15549,7 +13741,7 @@
         },
         is = ns,
         rs = __webpack_require__("oNhJ"),
-        as = __webpack_require__.n(rs),
+        className$24 = __webpack_require__.n(rs),
         os = function (e) {
           var t = e.visible,
             n = e.onOK;
@@ -15557,18 +13749,18 @@
             (t &&
               React_.a.createElement(
                 "div",
-                { className: as.a.wrapper },
+                { className: className$24.a.wrapper },
                 React_.a.createElement(
                   "div",
                   { className: "am-dialog-mask show" },
                   React_.a.createElement(
                     "div",
-                    { className: as.a.container },
+                    { className: className$24.a.container },
                     React_.a.createElement("div", {
-                      className: as.a.img,
+                      className: className$24.a.img,
                     }),
                     React_.a.createElement("div", {
-                      className: as.a.closeBtn,
+                      className: className$24.a.closeBtn,
                       onClick: n,
                     })
                   )
@@ -15579,7 +13771,7 @@
         },
         ss = os,
         ls = __webpack_require__("YTik"),
-        cs = __webpack_require__.n(ls),
+        className$25 = __webpack_require__.n(ls),
         us = function (e) {
           var t = e.imageId,
             n = e.imageData,
@@ -15592,23 +13784,23 @@
               in: i,
               timeout: 200,
               classNames: {
-                appear: cs.a.appear,
-                appearActive: cs.a.activeAppear,
-                appearDone: cs.a.doneAppear,
-                enter: cs.a.enter,
-                enterActive: cs.a.activeEnter,
-                enterDone: cs.a.doneEnter,
-                exit: cs.a.exit,
-                exitActive: cs.a.activeExit,
-                exitDone: cs.a.doneExit,
+                appear: className$25.a.appear,
+                appearActive: className$25.a.activeAppear,
+                appearDone: className$25.a.doneAppear,
+                enter: className$25.a.enter,
+                enterActive: className$25.a.activeEnter,
+                enterDone: className$25.a.doneEnter,
+                exit: className$25.a.exit,
+                exitActive: className$25.a.activeExit,
+                exitDone: className$25.a.doneExit,
               },
               onEntered: o,
               unmountOnExit: true,
             },
             React_.a.createElement(
               "div",
-              { className: cs.a.wrapper },
-              on && React_.a.createElement("img", { src: n }),
+              { className: className$25.a.wrapper },
+              isIos && React_.a.createElement("img", { src: n }),
               a &&
                 t &&
                 React_.a.createElement("img", { src: baseUrl + "/" + t })
@@ -15617,7 +13809,7 @@
         },
         ds = us,
         ms = __webpack_require__("bBPS"),
-        ps = __webpack_require__.n(ms),
+        className$26 = __webpack_require__.n(ms),
         fs = function (e) {
           var t = e.visible,
             n = e.text,
@@ -15640,24 +13832,24 @@
                 in: t,
                 timeout: 300,
                 classNames: {
-                  appear: ps.a.appear,
-                  appearActive: ps.a.activeAppear,
-                  appearDone: ps.a.doneAppear,
-                  enter: ps.a.enter,
-                  enterActive: ps.a.activeEnter,
-                  enterDone: ps.a.doneEnter,
-                  exit: ps.a.exit,
-                  exitActive: ps.a.activeExit,
-                  exitDone: ps.a.doneExit,
+                  appear: className$26.a.appear,
+                  appearActive: className$26.a.activeAppear,
+                  appearDone: className$26.a.doneAppear,
+                  enter: className$26.a.enter,
+                  enterActive: className$26.a.activeEnter,
+                  enterDone: className$26.a.doneEnter,
+                  exit: className$26.a.exit,
+                  exitActive: className$26.a.activeExit,
+                  exitDone: className$26.a.doneExit,
                 },
                 unmountOnExit: true,
               },
               React_.a.createElement(
                 "div",
-                { className: ps.a.wrapper },
+                { className: className$26.a.wrapper },
                 React_.a.createElement(
                   "div",
-                  { className: ps.a.toast },
+                  { className: className$26.a.toast },
                   React_.a.createElement("img", {
                     src:
                       "https://gw.alipayobjects.com/mdn/rms_4be1e1/afts/img/A*u4QSSa5bCzoAAAAAAAAAAAAAARQnAQ",
@@ -15674,7 +13866,7 @@
         },
         hs = fs,
         gs = __webpack_require__("fZ3z"),
-        bs = __webpack_require__.n(gs),
+        className$27 = __webpack_require__.n(gs),
         vs = function (e) {
           var t = e.visible,
             n = e.onOk,
@@ -15690,12 +13882,12 @@
             },
             React_.a.createElement(
               "div",
-              { className: bs.a.subtitle },
+              { className: className$27.a.subtitle },
               "为保障打印清晰度，将为你生成2500*2500像素的高清福字图片"
             ),
             React_.a.createElement(
               "div",
-              { className: bs.a.desc },
+              { className: className$27.a.desc },
               React_.a.createElement("div", null, "复制链接到浏览器打开下载"),
               React_.a.createElement(
                 "div",
@@ -15719,129 +13911,6 @@
             __assign.apply(this, arguments)
           );
         },
-        __awaiter = function (thisArg, _arguments, P, generator) {
-          function adopt(value) {
-            return value instanceof P
-              ? value
-              : new P(function (res) {
-                  res(value);
-                });
-          }
-          return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) {
-              try {
-                step(generator.next(value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function rejected(value) {
-              try {
-                step(generator["throw"](value));
-              } catch (e) {
-                reject(e);
-              }
-            }
-            function step(result) {
-              result.done
-                ? resolve(result.value)
-                : adopt(result.value).then(fulfilled, rejected);
-            }
-            step(
-              (generator = generator.apply(thisArg, _arguments || [])).next()
-            );
-          });
-        },
-        __generator = function (thisArg, body) {
-          var f,
-            y,
-            t,
-            generator,
-            _ = {
-              label: 0,
-              sent: function () {
-                if (1 & t[0]) throw t[1];
-                return t[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (generator = { next: verb(0), throw: verb(1), return: verb(2) }),
-            "function" === typeof Symbol &&
-              (generator[Symbol.iterator] = function () {
-                return this;
-              }),
-            generator
-          );
-          function verb(n) {
-            return function (v) {
-              return step([n, v]);
-            };
-          }
-          function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_)
-              try {
-                if (
-                  ((f = 1),
-                  y &&
-                    (t =
-                      2 & op[0]
-                        ? y["return"]
-                        : op[0]
-                        ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
-                        : y.next) &&
-                    !(t = t.call(y, op[1])).done)
-                )
-                  return t;
-                switch (((y = 0), t && (op = [2 & op[0], t.value]), op[0])) {
-                  case 0:
-                  case 1:
-                    t = op;
-                    break;
-                  case 4:
-                    return _.label++, { value: op[1], done: false };
-                  case 5:
-                    _.label++, (y = op[1]), (op = [0]);
-                    continue;
-                  case 7:
-                    (op = _.ops.pop()), _.trys.pop();
-                    continue;
-                  default:
-                    if (
-                      ((t = _.trys),
-                      !(t = t.length > 0 && t[t.length - 1]) &&
-                        (6 === op[0] || 2 === op[0]))
-                    ) {
-                      _ = 0;
-                      continue;
-                    }
-                    if (3 === op[0] && (!t || (op[1] > t[0] && op[1] < t[3]))) {
-                      _.label = op[1];
-                      break;
-                    }
-                    if (6 === op[0] && _.label < t[1]) {
-                      (_.label = t[1]), (t = op);
-                      break;
-                    }
-                    if (t && _.label < t[2]) {
-                      (_.label = t[2]), _.ops.push(op);
-                      break;
-                    }
-                    t[2] && _.ops.pop(), _.trys.pop();
-                    continue;
-                }
-                op = body.call(thisArg, _);
-              } catch (e) {
-                (op = [6, e]), (y = 0);
-              } finally {
-                f = t = 0;
-              }
-            if (5 & op[0]) throw op[1];
-            return { value: op[0] ? op[1] : undefined, done: true };
-          }
-        },
         ks = function () {
           for (var e = 0, t = 0, n = arguments.length; t < n; t++)
             e += arguments[t].length;
@@ -15852,8 +13921,6 @@
               i[r] = a[o];
           return i;
         },
-        AlipayJSAPI = window.ap,
-        Es = window.Tracert,
         Ss = 0,
         MainApp = function (props) {
           var t,
@@ -16166,10 +14233,10 @@
                   nn.error("error", ["load stickers failed"]);
               },
               onStampClicked: function () {
-                rt(true), Es.expo("c64127");
+                rt(true), Tracert.expo("c64127");
               },
               onTabletChanged: function (e, t) {
-                setAlreadyDrawn(e), 0 === t && Es.click("c63924.d132527");
+                setAlreadyDrawn(e), 0 === t && Tracert.click("c63924.d132527");
               },
               onToastShown: function (e) {
                 Xe(e), Ze(true);
@@ -16189,7 +14256,7 @@
             function () {
               if (Bi) {
                 un({ importantSpm: importantSpm, streamSpm: streamSpm }),
-                  Es.call("logPv");
+                  Tracert.call("logPv");
                 var e = function () {
                   return __awaiter(
                     undefined,
@@ -16618,11 +14685,15 @@
                           case 34:
                             return (
                               (A = window.localStorage),
-                              (_ = JSON.parse(A.getItem(h5dataStorageKey) || "{}")),
+                              (_ = JSON.parse(
+                                A.getItem(h5dataStorageKey) || "{}"
+                              )),
                               _.guideShown
                                 ? [3, 35]
                                 : (setCurrentPage(pageMode.Guide),
-                                  (y = JSON.parse(A.getItem(h5dataStorageKey) || "{}")),
+                                  (y = JSON.parse(
+                                    A.getItem(h5dataStorageKey) || "{}"
+                                  )),
                                   A.setItem(
                                     h5dataStorageKey,
                                     JSON.stringify(
@@ -16707,7 +14778,7 @@
                       return (
                         Yi && setAlreadyDrawn(true),
                         setCurrentPage(pageMode.Writing),
-                        Es.click("c63917.d132250"),
+                        Tracert.click("c63917.d132250"),
                         [2]
                       );
                   }
@@ -16940,7 +15011,7 @@
                         [3, 16]
                       );
                     case 15:
-                      Ze(true), Xe(m), Es.expo("c64125"), (B.label = 16);
+                      Ze(true), Xe(m), Tracert.expo("c64125"), (B.label = 16);
                     case 16:
                       return (o = l), [3, 19];
                     case 17:
@@ -17367,7 +15438,7 @@
                         [3, 4]
                       );
                     case 4:
-                      return Es.click("c64127.d132253"), [2];
+                      return Tracert.click("c64127.d132253"), [2];
                   }
                 });
               });
@@ -17416,7 +15487,7 @@
                   return (
                     Ct(false),
                     Tn(true),
-                    sn
+                    isAndroid
                       ? Cn(true)
                       : ((e = Bi.getFinalImage({ iosSnapshotImageData: true })
                           .iosSnapshotImageData),
@@ -17439,7 +15510,7 @@
                     case 2:
                       return (
                         n.sent(),
-                        on && (Ze(true), Xe("已保存到系统相册")),
+                        isIos && (Ze(true), Xe("已保存到系统相册")),
                         [3, 4]
                       );
                     case 3:
@@ -17454,7 +15525,7 @@
                         [3, 4]
                       );
                     case 4:
-                      return Tn(false), pi(false), sn && Cn(false), [2];
+                      return Tn(false), pi(false), isAndroid && Cn(false), [2];
                   }
                 });
               });
@@ -18239,7 +16310,7 @@
                           st(clickToSignText),
                           Qt(""),
                           Bi.updateStamp(clickToSignText),
-                          Es.click("c64127.d132252");
+                          Tracert.click("c64127.d132252");
                       },
                       onClose: function () {
                         rt(false);
